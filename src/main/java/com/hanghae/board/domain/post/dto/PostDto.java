@@ -6,6 +6,8 @@ public record PostDto(
     Long id,
     String title,
     String content,
+    String username,
+    String password,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
