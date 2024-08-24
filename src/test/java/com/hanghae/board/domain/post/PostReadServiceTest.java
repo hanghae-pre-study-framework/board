@@ -7,15 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.hanghae.board.domain.post.entity.Post;
 import com.hanghae.board.domain.post.repository.PostRepository;
 import com.hanghae.board.domain.post.service.PostReadService;
+import com.hanghae.board.utill.PostTestFixture;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 class PostReadServiceTest {
 
   @Autowired
@@ -24,13 +25,21 @@ class PostReadServiceTest {
   @Autowired
   private PostRepository postRepository;
 
+  private List<Post> testPosts;
+
   @BeforeEach
   void setUp() {
-    postRepository.saveAll(List.of(
-        Post.builder().title("Title 1").content("Content 1").username("user1").build(),
-        Post.builder().title("Title 2").content("Content 2").username("user2").build(),
-        Post.builder().title("Title 3").content("Content 3").username("user3").build()
-    ));
+    var easyRandom = PostTestFixture.get(
+        LocalDate.of(1970, 1, 1),
+        LocalDate.of(2024, 8, 20)
+    );
+
+    testPosts = IntStream.range(0, 5)
+        .parallel()
+        .mapToObj(i -> easyRandom.nextObject(Post.class))
+        .toList();
+
+    postRepository.saveAll(testPosts);
   }
 
   @Test
@@ -38,13 +47,11 @@ class PostReadServiceTest {
     List<Post> 게시글목록 = postReadService.getPosts();
 
     assertNotNull(게시글목록);
-    assertEquals(3, 게시글목록.size());
+    assertEquals(testPosts.size(), 게시글목록.size());
 
-    assertTrue(게시글목록.get(0).getCreatedAt().isAfter(게시글목록.get(1).getCreatedAt()));
-    assertTrue(게시글목록.get(1).getCreatedAt().isAfter(게시글목록.get(2).getCreatedAt()));
-
-    assertEquals("Title 3", 게시글목록.get(0).getTitle());
-    assertEquals("Title 2", 게시글목록.get(1).getTitle());
-    assertEquals("Title 1", 게시글목록.get(2).getTitle());
+    for (int i = 0; i < 게시글목록.size() - 1; i++) {
+      System.out.println(게시글목록.get(i).getCreatedAt());
+      assertTrue(게시글목록.get(i).getCreatedAt().isAfter(게시글목록.get(i + 1).getCreatedAt()));
+    }
   }
 }
