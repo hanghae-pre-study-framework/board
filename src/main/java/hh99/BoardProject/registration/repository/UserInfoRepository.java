@@ -1,6 +1,6 @@
-package registration.repository;
+package hh99.BoardProject.registration.repository;
 
-import registration.entity.UserInfo;
+import hh99.BoardProject.registration.entity.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

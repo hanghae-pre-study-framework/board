@@ -1,4 +1,4 @@
-package registration.entity;
+package hh99.BoardProject.registration.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserInfo {
 
     @Id
-    @Column(name="user_name", nullable = false)
+    @Column(name="user_name", nullable = false, unique = true)
     private String userName;
 
     @Column(nullable = false)
@@ -28,28 +28,4 @@ public class UserInfo {
     @Column(name="reg_ip")
     private String regIp;
 
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRegId() {
-        return regId;
-    }
-
-    public void setRegId(String regId) {
-        this.regId = regId;
-    }
 }

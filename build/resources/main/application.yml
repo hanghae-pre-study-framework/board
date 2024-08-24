@@ -1,9 +1,16 @@
-spring.application.name=BoardProject
-#datasource ??
+server:
+  port: 8080
+
 spring :
-datasource:
-hikari:
-driver-class-name: com.mysql.cj.jdbc.Driver
-jdbc-url: jdbc:mysql://localhost:3306?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-username: root
-password: 1234
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/board
+    #?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 1234 #환경변수 설정 필요
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+  thymeleaf:
+    enabled: false
