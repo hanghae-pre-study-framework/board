@@ -1,0 +1,37 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.3'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.hanhae99'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	//lombok 라이브러리
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	//자동 컴파일 해주는 것 , 캐시 없애고 리로딩 시켜줌
+	implementation 'org.springframework.boot:spring-boot-devtools'//Build-> Recompile 누르면 서버 재시작 안해도 자동으로 수정내용 바뀜 ctrl+shift+f9
+	//jpa 사용시 파라미터 보여주게하는 외부 라이브러리 -> 단, 운영할때에는 빼고 하기, 성능에서 병목이 발생할 수도 있음
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'//기본적으로 스프링부트는 왠만한 라이브러리의 버전을 미리 셋팅해놓음, 단, 이렇게 미리 셋팅안해 놓은 라이브러리는 버전 셋팅해줘야됨
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
