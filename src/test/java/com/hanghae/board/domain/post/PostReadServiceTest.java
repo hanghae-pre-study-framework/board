@@ -7,12 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.entity.Post;
+import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.repository.PostRepository;
 import com.hanghae.board.domain.post.service.PostReadService;
+import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.utill.PostTestFixture;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
@@ -80,6 +81,11 @@ class PostReadServiceTest {
     Post 임시게시글 = postRepository.save(postFixture.nextObject(Post.class));
     long 존재하지_않는_ID = 임시게시글.getId() + 1;
 
-    assertThrows(NoSuchElementException.class, () -> postReadService.getPost(존재하지_않는_ID));
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postReadService.getPost(존재하지_않는_ID));
+
+    assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
+    assertEquals(404, exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getMessage(), exception.getMessage());
   }
 }

@@ -2,8 +2,10 @@ package com.hanghae.board.domain.post.service;
 
 
 import com.hanghae.board.domain.post.dto.PostDto;
+import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.mapper.PostMapper;
 import com.hanghae.board.domain.post.repository.PostRepository;
+import com.hanghae.board.error.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class PostReadService {
   }
 
   public PostDto getPost(Long id) {
-    return postMapper.toDto(postRepository.findById(id).orElseThrow());
+    return postMapper.toDto(postRepository.findById(id)
+        .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND)));
   }
 }
