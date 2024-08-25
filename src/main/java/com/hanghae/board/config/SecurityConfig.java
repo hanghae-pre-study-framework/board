@@ -16,13 +16,16 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeHttpRequests(authz -> authz
-                // TODO: 회원 구현 후 수정
-                .requestMatchers("*").permitAll()
-//            .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .authorizeHttpRequests(authz ->
+            authz
+                // NOTE: Swagger UI 관련 요청은 인증 없이 허용 (개발 중에만 사용, 프로덕션에서는 제거해야 함)
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                .permitAll()
+                // NOTE: 임시로 모든 요청 허용 (개발 중에만 사용, 프로덕션에서는 제거해야 함)
+                .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
         )
-        .csrf(AbstractHttpConfigurer::disable);  // CSRF 비활성화를 위한 새로운 방법
+        .csrf(AbstractHttpConfigurer::disable);  // NOTE: CSRF 비활성화
 
     return http.build();
   }
