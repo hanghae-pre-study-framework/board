@@ -13,7 +13,6 @@ public class PostMapper {
         post.getTitle(),
         post.getContent(),
         post.getUsername(),
-        post.getPassword(),
         post.getCreatedAt(),
         post.getUpdatedAt()
     );

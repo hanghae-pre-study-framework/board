@@ -32,8 +32,5 @@ class PostWriteServiceTest {
     Assertions.assertThat(post.title()).isEqualTo(postCommand.title());
     Assertions.assertThat(post.content()).isEqualTo(postCommand.content());
     Assertions.assertThat(post.username()).isEqualTo(postCommand.username());
-    Assertions.assertThat(passwordEncoder.matches(postCommand.password(), post.password()))
-        .isTrue();
-
   }
 }
