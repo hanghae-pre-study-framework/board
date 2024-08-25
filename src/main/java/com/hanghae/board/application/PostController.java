@@ -2,7 +2,6 @@ package com.hanghae.board.application;
 
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
-import com.hanghae.board.domain.post.entity.Post;
 import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
 import java.util.List;
@@ -22,7 +21,7 @@ public class PostController {
   private final PostWriteService postWriteService;
 
   @GetMapping
-  public List<Post> getPosts() {
+  public List<PostDto> getPosts() {
     return postReadService.getPosts();
   }
 

@@ -44,14 +44,13 @@ class PostReadServiceTest {
 
   @Test
   void 모든_게시글을_생성일_기준_내림차순으로_조회한다() {
-    List<Post> 게시글목록 = postReadService.getPosts();
+    var 게시글목록 = postReadService.getPosts();
 
     assertNotNull(게시글목록);
     assertEquals(testPosts.size(), 게시글목록.size());
 
     for (int i = 0; i < 게시글목록.size() - 1; i++) {
-      System.out.println(게시글목록.get(i).getCreatedAt());
-      assertTrue(게시글목록.get(i).getCreatedAt().isAfter(게시글목록.get(i + 1).getCreatedAt()));
+      assertTrue(게시글목록.get(i).createdAt().isAfter(게시글목록.get(i + 1).createdAt()));
     }
   }
 }
