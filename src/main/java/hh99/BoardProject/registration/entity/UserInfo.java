@@ -8,11 +8,15 @@ import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Entity
-@Data
+@Data //getter, setter 자동생성
 @Table(name="USER_INFO")
 public class UserInfo {
 
     @Id
+
+    @Column(name="seq_no", nullable = false)
+    private Integer seqNo;
+
     @Column(name="user_name", nullable = false, unique = true)
     private String userName;
 

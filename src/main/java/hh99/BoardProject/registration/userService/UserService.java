@@ -2,7 +2,6 @@ package hh99.BoardProject.registration.userService;
 
 import hh99.BoardProject.registration.entity.UserInfo;
 import hh99.BoardProject.registration.repository.UserInfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
@@ -13,8 +12,12 @@ import java.util.Date;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserInfoRepository userRepository;
+
+    private final UserInfoRepository userRepository;
+
+    public UserService(UserInfoRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public boolean registerUser(UserInfo user){
 
