@@ -20,4 +20,8 @@ public class PostReadService {
         .map(postMapper::toDto)
         .toList();
   }
+
+  public PostDto getPost(Long id) {
+    return postMapper.toDto(postRepository.findById(id).orElseThrow());
+  }
 }
