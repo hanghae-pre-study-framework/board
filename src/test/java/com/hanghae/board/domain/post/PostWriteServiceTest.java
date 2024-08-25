@@ -26,7 +26,7 @@ class PostWriteServiceTest {
         "비밀번호"
     );
 
-    var post = postWriteService.create(postCommand);
+    var post = postWriteService.createPost(postCommand);
 
     Assertions.assertThat(post.id()).isNotNull();
     Assertions.assertThat(post.title()).isEqualTo(postCommand.title());
