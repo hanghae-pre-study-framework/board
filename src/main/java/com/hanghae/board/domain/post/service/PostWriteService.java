@@ -18,7 +18,7 @@ public class PostWriteService {
   private final PostMapper postMapper;
   private final PasswordEncoder passwordEncoder;
 
-  public PostDto create(PostCommand postCommand) {
+  public PostDto createPost(PostCommand postCommand) {
 
     var post = Post
         .builder()

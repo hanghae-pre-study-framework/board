@@ -27,6 +27,6 @@ public class PostController {
 
   @PostMapping
   public PostDto create(@RequestBody PostCommand command) {
-    return postWriteService.create(command);
+    return postWriteService.createPost(command);
   }
 }
