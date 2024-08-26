@@ -42,6 +42,10 @@ public class PostWriteService {
     var post = postRepository.findWithPessimisticLockById(id)
         .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
+    if (post.isDestroyed()) {
+      throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
+    }
+
     if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
       throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
     }

@@ -154,6 +154,25 @@ class PostWriteServiceTest {
   }
 
   @Test
+  void 이미_삭제된_게시물_수정_시도() {
+    PostCommand postCommand = PostTestFixture.nextPostCommand(postFixture);
+    var post = postWriteService.createPost(postCommand);
+
+    DeletePostCommand deletePostCommand = new DeletePostCommand(postCommand.password());
+    postWriteService.deletePost(post.id(), deletePostCommand);
+
+    UpdatePostCommand updatePostCommand = PostTestFixture.nextUpdatePostCommand(postFixture);
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postWriteService.updatePost(post.id(), updatePostCommand));
+
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED, exception.getErrorCode());
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED.getStatus(),
+        exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED.getMessage(), exception.getMessage());
+  }
+
+  @Test
   void 게시물_단건_삭제_성공() {
     PostCommand postCommand = PostTestFixture.nextPostCommand(postFixture);
     var post = postWriteService.createPost(postCommand);

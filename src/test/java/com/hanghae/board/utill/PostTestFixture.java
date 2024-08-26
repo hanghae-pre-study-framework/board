@@ -29,7 +29,8 @@ public class PostTestFixture {
         .randomize(named("title").and(ofType(String.class)),
             () -> "Title: " + java.util.UUID.randomUUID().toString().substring(0, 8))
         .randomize(named("password").and(ofType(String.class)),
-            () -> java.util.UUID.randomUUID().toString().substring(0, 12));
+            () -> java.util.UUID.randomUUID().toString().substring(0, 12))
+        .randomize(named("isDestroyed").and(ofType(boolean.class)), () -> false);
 
     return new EasyRandom(param);
   }
