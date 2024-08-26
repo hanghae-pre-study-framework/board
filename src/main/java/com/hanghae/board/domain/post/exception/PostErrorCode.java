@@ -10,7 +10,8 @@ public enum PostErrorCode implements ErrorCode {
 
   POST_NOT_FOUND(404, "해당 게시글을 찾을 수 없습니다."),
   INVALID_POST_REQUEST(400, "잘못된 게시글 요청입니다."),
-  POST_PASSWORD_MISMATCH(403, "게시글 비밀번호가 일치하지 않습니다.");
+  POST_PASSWORD_MISMATCH(403, "게시글 비밀번호가 일치하지 않습니다."),
+  POST_ALREADY_DELETED(400, "이미 삭제된 게시글입니다.");
 
   private final int status;
   private final String message;

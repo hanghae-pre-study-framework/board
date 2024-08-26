@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
 import com.hanghae.board.domain.post.exception.PostErrorCode;
@@ -150,5 +151,61 @@ class PostWriteServiceTest {
     assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
     assertEquals(PostErrorCode.POST_NOT_FOUND.getStatus(), exception.getErrorCode().getStatus());
     assertEquals(PostErrorCode.POST_NOT_FOUND.getMessage(), exception.getMessage());
+  }
+
+  @Test
+  void 게시물_단건_삭제_성공() {
+    PostCommand postCommand = PostTestFixture.nextPostCommand(postFixture);
+    var post = postWriteService.createPost(postCommand);
+
+    DeletePostCommand deletePostCommand = new DeletePostCommand(postCommand.password());
+    boolean isDeleted = postWriteService.deletePost(post.id(), deletePostCommand);
+
+    assertThat(isDeleted).isTrue();
+  }
+
+  @Test
+  void 게시물_삭제시_비밀번호_불일치() {
+    PostCommand postCommand = PostTestFixture.nextPostCommand(postFixture);
+    var post = postWriteService.createPost(postCommand);
+
+    DeletePostCommand deletePostCommand = new DeletePostCommand("wrong_password");
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postWriteService.deletePost(post.id(), deletePostCommand));
+
+    assertEquals(PostErrorCode.POST_PASSWORD_MISMATCH, exception.getErrorCode());
+    assertEquals(PostErrorCode.POST_PASSWORD_MISMATCH.getStatus(),
+        exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_PASSWORD_MISMATCH.getMessage(), exception.getMessage());
+  }
+
+  @Test
+  void 존재하지_않는_게시물_삭제_시도() {
+    long 존재하지_않는_ID = -1;
+    DeletePostCommand deletePostCommand = new DeletePostCommand("password");
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postWriteService.deletePost(존재하지_않는_ID, deletePostCommand));
+
+    assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getStatus(), exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getMessage(), exception.getMessage());
+  }
+
+  @Test
+  void 이미_삭제된_게시물_삭제_시도() {
+    PostCommand postCommand = PostTestFixture.nextPostCommand(postFixture);
+    var post = postWriteService.createPost(postCommand);
+
+    DeletePostCommand deletePostCommand = new DeletePostCommand(postCommand.password());
+    postWriteService.deletePost(post.id(), deletePostCommand);
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postWriteService.deletePost(post.id(), deletePostCommand));
+
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED, exception.getErrorCode());
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED.getStatus(),
+        exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_ALREADY_DELETED.getMessage(), exception.getMessage());
   }
 }

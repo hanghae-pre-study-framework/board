@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,6 +37,10 @@ public class Post {
   @Column(nullable = false, length = 256)
   private String password;
 
+  @Column(nullable = false)
+  @ColumnDefault("false")
+  private boolean isDestroyed = false;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
@@ -44,12 +49,14 @@ public class Post {
 
   @Builder
   private Post(String title, String content, String username, String password,
+      Boolean isDestroyed,
       LocalDateTime createdAt,
       LocalDateTime updatedAt) {
     this.title = Objects.requireNonNull(title);
     this.content = Objects.requireNonNull(content);
     this.username = Objects.requireNonNull(username);
     this.password = Objects.requireNonNull(password);
+    this.isDestroyed = isDestroyed != null && isDestroyed;
     this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
     this.updatedAt = updatedAt;
   }
@@ -60,6 +67,11 @@ public class Post {
     this.content = Objects.requireNonNull(content);
     this.username = Objects.requireNonNull(username);
     this.password = Objects.requireNonNull(password);
+    this.updatedAt = updatedAt == null ? LocalDateTime.now() : updatedAt;
+  }
+
+  public void destroy(LocalDateTime updatedAt) {
+    this.isDestroyed = true;
     this.updatedAt = updatedAt == null ? LocalDateTime.now() : updatedAt;
   }
 }

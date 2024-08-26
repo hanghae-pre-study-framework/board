@@ -1,5 +1,6 @@
 package com.hanghae.board.application;
 
+import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
@@ -7,6 +8,7 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,5 +44,10 @@ public class PostController {
   @PutMapping("/{id}")
   public PostDto update(@PathVariable Long id, @RequestBody UpdatePostCommand command) {
     return postWriteService.updatePost(id, command);
+  }
+
+  @DeleteMapping("/{id}")
+  public boolean delete(@PathVariable Long id, @RequestBody DeletePostCommand command) {
+    return postWriteService.deletePost(id, command);
   }
 }
