@@ -26,13 +26,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PostWriteServiceTest {
+class PostWriteServiceTest {
 
-  private final String title = "title";
-  private final String content = "content";
-  private final String username = "username";
-  private final String password = "password";
-  private final String encodedPassword = "encodedPassword";
+  private final String TITLE = "title";
+  private final String CONTENT = "content";
+  private final String USERNAME = "username";
+  private final String PASSWORD = "password";
+  private final String ENCODED_PASSWORD = "encodedPassword";
 
   @Spy
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
@@ -47,22 +47,22 @@ public class PostWriteServiceTest {
   @NullSource
   void 게시글생성실패_NULL값(String nullValue) {
     assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(nullValue, content, username, password);
+      PostCommand postCommand = new PostCommand(nullValue, CONTENT, USERNAME, PASSWORD);
       postWriteService.createPost(postCommand);
     });
 
     assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(title, nullValue, username, password);
+      PostCommand postCommand = new PostCommand(TITLE, nullValue, USERNAME, PASSWORD);
       postWriteService.createPost(postCommand);
     });
 
     assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(title, content, nullValue, password);
+      PostCommand postCommand = new PostCommand(TITLE, CONTENT, nullValue, PASSWORD);
       postWriteService.createPost(postCommand);
     });
 
     assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(title, content, username, nullValue);
+      PostCommand postCommand = new PostCommand(TITLE, CONTENT, USERNAME, nullValue);
       postWriteService.createPost(postCommand);
     });
   }
@@ -71,8 +71,8 @@ public class PostWriteServiceTest {
   void 게시글단건생성성공() {
     // given
     Post savedPost = post();
-    PostCommand postCommand = new PostCommand(title, content, username, password);
-    doReturn(encodedPassword).when(passwordEncoder).encode(password);
+    PostCommand postCommand = new PostCommand(TITLE, CONTENT, USERNAME, PASSWORD);
+    doReturn(ENCODED_PASSWORD).when(passwordEncoder).encode(PASSWORD);
     doReturn(savedPost).when(postRepository).save(any(Post.class));
 
     // when
@@ -85,7 +85,7 @@ public class PostWriteServiceTest {
     Assertions.assertThat(result.username()).isEqualTo(postCommand.username());
 
     // verify
-    verify(passwordEncoder, times(1)).encode(password);
+    verify(passwordEncoder, times(1)).encode(PASSWORD);
     verify(postRepository, times(1)).save(any(Post.class));
     verify(postMapper, times(1)).toDto(savedPost);
   }
@@ -93,10 +93,10 @@ public class PostWriteServiceTest {
   private Post post() {
     return Post.builder()
         .id(-1L)
-        .title(title)
-        .content(content)
-        .username(username)
-        .password(encodedPassword)
+        .title(TITLE)
+        .content(CONTENT)
+        .username(USERNAME)
+        .password(ENCODED_PASSWORD)
         .build();
   }
 }
