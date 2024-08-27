@@ -1,4 +1,4 @@
-package com.hanghae.board.application;
+package com.hanghae.board.application.controller;
 
 import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
