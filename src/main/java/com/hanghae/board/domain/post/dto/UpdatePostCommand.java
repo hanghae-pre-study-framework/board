@@ -1,18 +1,26 @@
 package com.hanghae.board.domain.post.dto;
 
-import java.util.Objects;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-public record UpdatePostCommand(
-    String title,
-    String content,
-    String username,
-    String password
-) {
+@Getter
+@Builder
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
+public class UpdatePostCommand {
 
-  public UpdatePostCommand {
-    Objects.requireNonNull(title);
-    Objects.requireNonNull(content);
-    Objects.requireNonNull(username);
-    Objects.requireNonNull(password);
-  }
+  @NotEmpty
+  private final String title;
+
+  @NotEmpty
+  private final String content;
+
+  @NotEmpty
+  private final String username;
+
+  @NotEmpty
+  private final String password;
 }

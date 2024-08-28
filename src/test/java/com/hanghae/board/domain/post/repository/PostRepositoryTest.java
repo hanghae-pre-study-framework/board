@@ -15,6 +15,40 @@ class PostRepositoryTest {
   private PostRepository postRepository;
 
   @Test
+  void 게시글_전체_조회_내림차순() {
+    // given
+    final Post post1 = Post.builder()
+        .title("제목1")
+        .content("내용1")
+        .username("작성자1")
+        .password("비밀번호1")
+        .build();
+    final Post post2 = Post.builder()
+        .title("제목2")
+        .content("내용2")
+        .username("작성자2")
+        .password("비밀번호2")
+        .build();
+    final Post post3 = Post.builder()
+        .title("제목3")
+        .content("내용3")
+        .username("작성자3")
+        .password("비밀번호3")
+        .build();
+    postRepository.save(post1);
+    postRepository.save(post2);
+    postRepository.save(post3);
+
+    // when
+    final List<Post> result = postRepository.findAllByIsDestroyedOrderByCreatedAtDesc(false);
+
+    // then
+    assertThat(result).hasSize(3);
+    assertThat(result).extracting("title")
+        .containsExactly("제목3", "제목2", "제목1");
+  }
+
+  @Test
   void 게시글_등록() {
     // given
     final Post post = Post.builder()
@@ -35,30 +69,6 @@ class PostRepositoryTest {
     assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
-  }
-
-  @Test
-  void 게시글_수정() {
-    // given
-    final Post post = Post.builder()
-        .title("제목")
-        .content("내용")
-        .username("작성자")
-        .password("비밀번호")
-        .build();
-    final Post savedPost = postRepository.save(post);
-
-    // when
-    savedPost.update("수정된 제목", "수정된 내용", "작성자", "비밀번호");
-
-    // then
-    final Post result = postRepository.findById(savedPost.getId()).get();
-    assertThat(result.getId()).isNotNull();
-    assertThat(result.getTitle()).isEqualTo("수정된 제목");
-    assertThat(result.getContent()).isEqualTo("수정된 내용");
-    assertThat(result.getUsername()).isEqualTo("작성자");
-    assertThat(result.getPassword()).isEqualTo("비밀번호");
-    assertThat(result.getCreatedAt()).isNotNull();
   }
 
   @Test
@@ -104,36 +114,51 @@ class PostRepositoryTest {
   }
 
   @Test
-  void 게시글_전체_조회_내림차순() {
+  void 게시글_조회_삭제_여부() {
     // given
-    final Post post1 = Post.builder()
-        .title("제목1")
-        .content("내용1")
-        .username("작성자1")
-        .password("비밀번호1")
+    final Post post = Post.builder()
+        .title("제목")
+        .content("내용")
+        .username("작성자")
+        .password("비밀번호")
         .build();
-    final Post post2 = Post.builder()
-        .title("제목2")
-        .content("내용2")
-        .username("작성자2")
-        .password("비밀번호2")
-        .build();
-    final Post post3 = Post.builder()
-        .title("제목3")
-        .content("내용3")
-        .username("작성자3")
-        .password("비밀번호3")
-        .build();
-    postRepository.save(post1);
-    postRepository.save(post2);
-    postRepository.save(post3);
+    final Post savedPost = postRepository.save(post);
 
     // when
-    final List<Post> result = postRepository.findAllByIsDestroyedOrderByCreatedAtDesc(false);
+    final Post result = postRepository.findByIdAndIsDestroyed(savedPost.getId(), false).get();
 
     // then
-    assertThat(result).hasSize(3);
-    assertThat(result).extracting("title")
-        .containsExactly("제목3", "제목2", "제목1");
+    assertThat(result.getId()).isNotNull();
+    assertThat(result.getTitle()).isEqualTo("제목");
+    assertThat(result.getContent()).isEqualTo("내용");
+    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getPassword()).isEqualTo("비밀번호");
+    assertThat(result.getCreatedAt()).isNotNull();
+    assertThat(result.getUpdatedAt()).isNull();
   }
+
+  @Test
+  void 게시글_수정() {
+    // given
+    final Post post = Post.builder()
+        .title("제목")
+        .content("내용")
+        .username("작성자")
+        .password("비밀번호")
+        .build();
+    final Post savedPost = postRepository.save(post);
+
+    // when
+    savedPost.update("수정된 제목", "수정된 내용", "작성자", "비밀번호");
+
+    // then
+    final Post result = postRepository.findById(savedPost.getId()).get();
+    assertThat(result.getId()).isNotNull();
+    assertThat(result.getTitle()).isEqualTo("수정된 제목");
+    assertThat(result.getContent()).isEqualTo("수정된 내용");
+    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getPassword()).isEqualTo("비밀번호");
+    assertThat(result.getCreatedAt()).isNotNull();
+  }
+
 }

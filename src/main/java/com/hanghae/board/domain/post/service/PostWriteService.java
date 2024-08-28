@@ -46,12 +46,12 @@ public class PostWriteService {
       throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
     }
 
-    if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
+    if (!passwordEncoder.matches(postCommand.getPassword(), post.getPassword())) {
       throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
     }
 
-    post.update(postCommand.title(), postCommand.content(), postCommand.username(),
-        passwordEncoder.encode(postCommand.password()));
+    post.update(postCommand.getTitle(), postCommand.getContent(), postCommand.getUsername(),
+        passwordEncoder.encode(postCommand.getPassword()));
 
     return postMapper.toDto(postRepository.save(post));
   }
@@ -61,13 +61,13 @@ public class PostWriteService {
     var post = postRepository.findWithPessimisticLockById(id)
         .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
-    if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
-      throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
-
-    }
-
     if (post.isDestroyed()) {
       throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
+    }
+
+    if (!passwordEncoder.matches(postCommand.getPassword(), post.getPassword())) {
+      throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
+
     }
 
     post.destroy();

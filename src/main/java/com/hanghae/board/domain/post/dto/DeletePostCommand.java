@@ -1,7 +1,18 @@
 package com.hanghae.board.domain.post.dto;
 
-public record DeletePostCommand(
-    String password
-) {
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@Builder
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
+public class DeletePostCommand {
+
+  @NotEmpty
+  private final String password;
 
 }
