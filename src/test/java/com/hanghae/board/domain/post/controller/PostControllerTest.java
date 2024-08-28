@@ -1,11 +1,22 @@
 package com.hanghae.board.domain.post.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hanghae.board.application.controller.PostController;
 import com.hanghae.board.domain.post.dto.PostCommand;
+import com.hanghae.board.domain.post.dto.PostDto;
+import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
+import com.hanghae.board.error.GlobalExceptionHandler;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,10 +40,14 @@ class PostControllerTest {
   private PostController target;
 
   @Mock
+  private PostReadService postReadService;
+
+  @Mock
   private PostWriteService postWriteService;
 
+
   private MockMvc mockMvc;
-  private Gson gson;
+  private ObjectMapper objectMapper;
 
   private static Stream<PostCommand> provideInvalidPostCommands() {
     return Stream.of(
@@ -58,8 +74,41 @@ class PostControllerTest {
 
   @BeforeEach
   void init() {
-    mockMvc = MockMvcBuilders.standaloneSetup(target).build();
-    gson = new Gson();
+    mockMvc = MockMvcBuilders.standaloneSetup(target)
+        .setControllerAdvice(new GlobalExceptionHandler())
+        .build();
+    objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+  }
+
+  @Test
+  void 게시글목록조회성공_생성일내림차순() throws Exception {
+    // given
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime earlier = now.minusHours(1);
+    List<PostDto> postList = Arrays.asList(
+        new PostDto(2L, "Title 2", "Content 2", "author2", now, null),
+        new PostDto(1L, "Title 1", "Content 1", "author1", earlier, null)
+    );
+    doReturn(postList).when(postReadService).getPosts();
+
+    // when
+    final ResultActions resultActions = mockMvc.perform(
+        MockMvcRequestBuilders.get("/posts")
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+    String jsonResponse = mvcResult.getResponse().getContentAsString();
+    List<PostDto> responses = objectMapper.readValue(jsonResponse,
+        new TypeReference<List<PostDto>>() {
+        });
+
+    assertThat(responses).hasSize(2);
+    assertThat(responses.get(0).id()).isEqualTo(2L);
+    assertThat(responses.get(0).createdAt()).isAfter(responses.get(1).createdAt());
+
+    verify(postReadService).getPosts();
   }
 
   @ParameterizedTest
@@ -71,7 +120,7 @@ class PostControllerTest {
     // when
     final ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post(url)
-            .content(gson.toJson(invalidPostCommand))
+            .content(objectMapper.writeValueAsString(invalidPostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -91,7 +140,12 @@ class PostControllerTest {
     // when
     final ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post(url)
-            .content(gson.toJson(postCommand(title, content, username, password)))
+            .content(objectMapper.writeValueAsString(PostCommand.builder()
+                .title(title)
+                .content(content)
+                .username(username)
+                .password(password)
+                .build()))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
