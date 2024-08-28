@@ -6,6 +6,7 @@ import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
 import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
+@RequiredArgsConstructor
 public class PostController {
 
   private final PostReadService postReadService;
@@ -37,7 +38,7 @@ public class PostController {
 
 
   @PostMapping
-  public PostDto create(@RequestBody PostCommand command) {
+  public PostDto create(@RequestBody @Valid PostCommand command) {
     return postWriteService.createPost(command);
   }
 

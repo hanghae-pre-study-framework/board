@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PostReadServiceTest {
+class PostReadServiceTest {
 
   private final String TITLE = "title";
   private final String CONTENT = "content";

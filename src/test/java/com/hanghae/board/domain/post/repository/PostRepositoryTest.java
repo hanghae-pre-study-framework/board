@@ -3,7 +3,6 @@ package com.hanghae.board.domain.post.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hanghae.board.domain.post.entity.Post;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +49,7 @@ class PostRepositoryTest {
     final Post savedPost = postRepository.save(post);
 
     // when
-    LocalDateTime now = LocalDateTime.now();
-    savedPost.update("수정된 제목", "수정된 내용", "작성자", "비밀번호", now);
+    savedPost.update("수정된 제목", "수정된 내용", "작성자", "비밀번호");
 
     // then
     final Post result = postRepository.findById(savedPost.getId()).get();
@@ -61,7 +59,6 @@ class PostRepositoryTest {
     assertThat(result.getUsername()).isEqualTo("작성자");
     assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
-    assertThat(result.getUpdatedAt()).isEqualTo(now);
   }
 
   @Test

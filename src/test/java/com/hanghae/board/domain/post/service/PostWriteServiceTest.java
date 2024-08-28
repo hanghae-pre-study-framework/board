@@ -1,7 +1,6 @@
 package com.hanghae.board.domain.post.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -15,8 +14,6 @@ import com.hanghae.board.domain.post.repository.PostRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -43,30 +40,6 @@ class PostWriteServiceTest {
   @Mock
   private PasswordEncoder passwordEncoder;
 
-  @ParameterizedTest
-  @NullSource
-  void 게시글생성실패_NULL값(String nullValue) {
-    assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(nullValue, CONTENT, USERNAME, PASSWORD);
-      postWriteService.createPost(postCommand);
-    });
-
-    assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(TITLE, nullValue, USERNAME, PASSWORD);
-      postWriteService.createPost(postCommand);
-    });
-
-    assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(TITLE, CONTENT, nullValue, PASSWORD);
-      postWriteService.createPost(postCommand);
-    });
-
-    assertThrows(NullPointerException.class, () -> {
-      PostCommand postCommand = new PostCommand(TITLE, CONTENT, USERNAME, nullValue);
-      postWriteService.createPost(postCommand);
-    });
-  }
-
   @Test
   void 게시글단건생성성공() {
     // given
@@ -80,9 +53,9 @@ class PostWriteServiceTest {
 
     // then
     Assertions.assertThat(result.id()).isNotNull();
-    Assertions.assertThat(result.title()).isEqualTo(postCommand.title());
-    Assertions.assertThat(result.content()).isEqualTo(postCommand.content());
-    Assertions.assertThat(result.username()).isEqualTo(postCommand.username());
+    Assertions.assertThat(result.title()).isEqualTo(postCommand.getTitle());
+    Assertions.assertThat(result.content()).isEqualTo(postCommand.getContent());
+    Assertions.assertThat(result.username()).isEqualTo(postCommand.getUsername());
 
     // verify
     verify(passwordEncoder, times(1)).encode(PASSWORD);
@@ -97,6 +70,15 @@ class PostWriteServiceTest {
         .content(CONTENT)
         .username(USERNAME)
         .password(ENCODED_PASSWORD)
+        .build();
+  }
+
+  private PostCommand postCommand(String title, String content, String username, String password) {
+    return PostCommand.builder()
+        .title(title)
+        .content(content)
+        .username(username)
+        .password(password)
         .build();
   }
 }
