@@ -207,7 +207,7 @@ class PostControllerTest {
     );
 
     // then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isCreated());
   }
 
   @Test
