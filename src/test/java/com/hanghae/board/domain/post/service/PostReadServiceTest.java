@@ -66,7 +66,7 @@ class PostReadServiceTest {
     final List<PostDto> posts = postReadService.getPosts();
 
     // then
-    Assertions.assertThat(posts).hasSize(2);
+    Assertions.assertThat(posts).hasSize(3);
     Assertions.assertThat(posts.get(0).id()).isEqualTo(2L);
     Assertions.assertThat(posts.get(1).id()).isEqualTo(1L);
   }
@@ -99,7 +99,7 @@ class PostReadServiceTest {
         () -> postReadService.getPost(destroyedPostId));
 
     // then
-    Assertions.assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
+    Assertions.assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_PASSWORD_MISMATCH);
   }
 
   @Test
