@@ -18,4 +18,6 @@ public interface BoardListRepository extends JpaRepository<BoardList, String> {
 
     //Projection이용해서 하는 방법
     List<PostSummaryProjection> findAllBy(Sort regDate);
+
+    BoardList findBySeqNo(Integer seqNo);
 }

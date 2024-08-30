@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserInfo {
 
     @Id
-
     @Column(name="seq_no", nullable = false)
     private Integer seqNo;
 

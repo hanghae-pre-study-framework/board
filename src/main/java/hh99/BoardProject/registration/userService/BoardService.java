@@ -22,28 +22,9 @@ public class BoardService {
         this.boardListRepository = boardListRepository;
     }
 
-
-    public Integer registPost(BoardList post)
-    {
-        DateFormat now = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-
-        //if(userInfoRepository.findOneByUserName(list.getUserName()) == null)
-        //    //존재하지 않는 유저
-       //     return -10;
-
-        if(post.getPassword() == null || post.getPassword().isEmpty()){
-            //패스워드 누락
-            return -5;
-        }
-        else{
-            post.setRegDate(now.format(new Date()));
-            post.setUseYn("Y");
-
-            boardListRepository.save(post);
-            return 0;
-        }
-    }
-
+    /**
+    * 게시글 전체 조회
+    * */
     public List<BoardList> getAllPosts(){
         return boardListRepository.findAll(Sort.by(Sort.Direction.DESC,"regDate"));
 
@@ -55,4 +36,15 @@ public class BoardService {
     public List<PostSummaryProjection> getAllPost3(){
         return boardListRepository.findAllBy(Sort.by(Sort.Direction.DESC, "regDate"));
     }
+
+    /**
+     * 게시글 단건 조회
+     * */
+    public BoardList getPost(Integer seq_no){
+        return boardListRepository.findBySeqNo(seq_no);
+    }
+
+    /***
+     * 선택한 게시글 조회
+     */
 }
