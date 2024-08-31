@@ -2,6 +2,7 @@ package hh99.BoardProject.registration.controller;
 
 import hh99.BoardProject.registration.entity.BoardList;
 import hh99.BoardProject.registration.projection.PostSummaryProjection;
+import hh99.BoardProject.registration.userService.BoardDeleteService;
 import hh99.BoardProject.registration.userService.BoardWriteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -25,7 +26,7 @@ public class BoardController {
 
     private final BoardWriteService boardWriteService;
     private final BoardService boardService;
-
+    private final BoardDeleteService boardDeleteService;
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<BoardList> registOnePost(@RequestBody BoardList list){
@@ -73,12 +74,12 @@ public class BoardController {
     //게시글 수정
     @PostMapping("/posts/{seq_no}/edit")
     public ResponseEntity<BoardList> updatePost(@PathVariable("seq_no") Integer seq_no, @RequestBody BoardList list){
-        BoardList post = boardService.getPost(seq_no);
-        String password = post.getPassword();
+        return ResponseEntity.ok(boardWriteService.EditPost(list, seq_no));
+    }
 
-        if(list.getPassword().equals(password))
-            return ResponseEntity.ok(boardWriteService.EditPost(list, seq_no));
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    //게시글 삭제
+    @PostMapping("/posts/{seq_no}/delete")
+    public ResponseEntity<BoardList> deletePost(@PathVariable("seq_no")Integer seq_no, @RequestBody BoardList list){
+       return ResponseEntity.ok(boardDeleteService.DeletePost(list, seq_no));
     }
 }

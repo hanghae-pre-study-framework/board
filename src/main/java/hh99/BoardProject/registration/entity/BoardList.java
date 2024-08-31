@@ -19,10 +19,10 @@ public class BoardList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="seq_no")
     private Integer seqNo;
-    @Column(name="title", nullable = false)
+    @Column(name="title")
     private String title;
 
-    @Column(name="contents", nullable = false)
+    @Column(name="contents")
     private String contents;
 
     @Column(name= "password")

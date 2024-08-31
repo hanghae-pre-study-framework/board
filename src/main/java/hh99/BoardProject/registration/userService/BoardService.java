@@ -43,8 +43,4 @@ public class BoardService {
     public BoardList getPost(Integer seq_no){
         return boardListRepository.findBySeqNo(seq_no);
     }
-
-    /***
-     * 선택한 게시글 조회
-     */
 }
