@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.hanghae.board.domain.user.application.controller.UserController;
+import com.hanghae.board.application.controller.AuthController;
 import com.hanghae.board.domain.user.dto.UserCommand;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.service.UserWriteService;
@@ -28,10 +28,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+class AuthControllerTest {
 
   @InjectMocks
-  private UserController target;
+  private AuthController target;
 
   @Mock
   private UserWriteService userWriteService;
@@ -73,9 +73,9 @@ class UserControllerTest {
 
   @ParameterizedTest
   @MethodSource("provideInvalidUserCommands")
-  void 유저등록_실패_유효성검사(UserCommand command) throws Exception {
+  void 회원가입_실패_유효성검사(UserCommand command) throws Exception {
     // given
-    final String url = "/users";
+    final String url = "/auth";
 
     // when
     final ResultActions resultActions = mockMvc.perform(post(url)
@@ -87,9 +87,9 @@ class UserControllerTest {
   }
 
   @Test
-  void 유저등록_실패_유저네임중복() throws Exception {
+  void 회원가입_실패_유저네임중복() throws Exception {
     // given
-    final String url = "/users";
+    final String url = "/auth";
     final UserCommand command = UserCommand.builder()
         .username("test")
         .password("password")
@@ -107,9 +107,9 @@ class UserControllerTest {
   }
 
   @Test
-  void 유저등록_성공() throws Exception {
+  void 회원가입_성공() throws Exception {
     // given
-    final String url = "/users";
+    final String url = "/auth";
     final UserCommand command = UserCommand.builder()
         .username("Test123")
         .password("Password1234")

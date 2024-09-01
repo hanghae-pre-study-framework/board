@@ -1,4 +1,4 @@
-package com.hanghae.board.domain.user.application.controller;
+package com.hanghae.board.application.controller;
 
 import com.hanghae.board.domain.user.dto.UserCommand;
 import com.hanghae.board.domain.user.service.UserWriteService;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-public class UserController {
+public class AuthController {
 
   private final UserWriteService userWriteService;
 
   @PostMapping
-  public ResponseEntity<Boolean> createUser(@RequestBody @Valid UserCommand command) {
+  public ResponseEntity<Boolean> signUp(@RequestBody @Valid UserCommand command) {
     Boolean result = userWriteService.createUser(command);
 
     return ResponseEntity.ok(result);
