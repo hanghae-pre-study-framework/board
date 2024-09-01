@@ -10,6 +10,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -34,13 +36,14 @@ public class BoardService {
     }
 
     public List<PostSummaryProjection> getAllPost3(){
-        return boardListRepository.findAllBy(Sort.by(Sort.Direction.DESC, "regDate"));
+        return boardListRepository.findAllByUseYn("Y", Sort.by(Sort.Direction.DESC, "regDate"));
     }
 
     /**
      * 게시글 단건 조회
      * */
     public BoardList getPost(Integer seq_no){
-        return boardListRepository.findBySeqNo(seq_no);
+        Optional<BoardList> boardListOptional = boardListRepository.findBySeqNo(seq_no);
+        return boardListOptional.orElseThrow(()-> new NoSuchElementException("Post not found"));
     }
 }

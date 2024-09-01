@@ -45,10 +45,10 @@ public class BoardWriteService {
      * 제목, 작성자명, 작성내용을 수정하고 수정된 게시글 Client로 반환
      * */
 
-    public BoardList EditPost(BoardList post, Integer seq_no){
+    public BoardList editPost(BoardList post, Integer seq_no){
         DateFormat now = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
-        String password = boardListRepository.findBySeqNo(seq_no).getPassword();
+        String password = boardListRepository.findBySeqNo(seq_no).get().getPassword();
 
         if(CheckPassword(post.getPassword(), password)) {
             post.setSeqNo(seq_no);

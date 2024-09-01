@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class BoardDeleteService {
@@ -16,21 +17,37 @@ public class BoardDeleteService {
         this.boardListRepository = boardListRepository;
     }
 
-    public BoardList DeletePost(BoardList post, Integer seq_no){ //soft delete
+    public boolean DeletePost(BoardList post, Integer seq_no){ //soft delete
         DateFormat now = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
-        String password = boardListRepository.findBySeqNo(seq_no).getPassword();
+        Optional<BoardList> originPost = boardListRepository.findBySeqNo(seq_no);
+        //BoardList originPost = boardListRepository.findBySeqNo(seq_no);
 
-        if(CheckPassword(post.getPassword(), password)) {
-            post.setSeqNo(seq_no);
-            post.setEditDate(now.format(new Date()));
-            post.setEditId(post.getEditId());
-            post.setUseYn("N");
+        if(originPost.isPresent() && originPost.stream().allMatch(s->s.getUseYn().equals("Y")))
+            if(originPost.stream().allMatch(s-> CheckPassword(s.getPassword(), post.getPassword()))){
+                BoardList p = originPost.get();
+                p.setUseYn("N");
+                p.setEditId(post.getEditId());
+                p.setEditDate(now.format(new Date()));
 
-            return boardListRepository.save(post);
+                boardListRepository.save(p);
+                return true;
+            }
+        else{
+            return false;
         }
-        else
-            return null;
+    //   if(CheckPassword(post.getPassword(), password)) {
+    //       post.setSeqNo(seq_no);
+    //       post.setEditDate(now.format(new Date()));
+    //       post.setEditId(post.getEditId());
+    //       post.setUseYn("N");
+
+    //       boardListRepository.save();
+    //       return true;
+    //   }
+    //   else
+    //       return false;
+        return false;
     }
 
     private Boolean CheckPassword(String delete_password, String password){

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BoardListRepository extends JpaRepository<BoardList, String> {
@@ -18,6 +19,7 @@ public interface BoardListRepository extends JpaRepository<BoardList, String> {
 
     //Projection이용해서 하는 방법
     List<PostSummaryProjection> findAllBy(Sort regDate);
+    List<PostSummaryProjection> findAllByUseYn(String useYn, Sort regDate);
 
-    BoardList findBySeqNo(Integer seqNo);
+    Optional<BoardList> findBySeqNo(Integer seqNo);
 }
