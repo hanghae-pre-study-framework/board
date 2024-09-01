@@ -2,7 +2,10 @@ package com.hanghae.board.domain.user.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.hanghae.board.domain.user.dto.UserCommand;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class UserWriteServiceTest {
@@ -22,6 +26,9 @@ class UserWriteServiceTest {
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private PasswordEncoder passwordEncoder;
 
 
   @Test
@@ -49,12 +56,21 @@ class UserWriteServiceTest {
         .username("username")
         .password("password")
         .build();
+    doReturn("encodedPassword").when(passwordEncoder).encode(command.getPassword());
 
     // when
     final boolean result = target.createUser(command);
 
     // then
     assertThat(result).isTrue();
+
+    // verify
+    verify(passwordEncoder, times(1)).encode(command.getPassword());
+    verify(userRepository).existsByUsername(command.getUsername());
+    verify(userRepository).save(
+        argThat(user -> user.getUsername().equals(command.getUsername())
+            && user.getPassword().equals("encodedPassword"))
+    );
   }
 
 }

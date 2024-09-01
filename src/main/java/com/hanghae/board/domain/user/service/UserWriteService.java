@@ -6,6 +6,7 @@ import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.repository.UserRepository;
 import com.hanghae.board.error.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 public class UserWriteService {
 
   private final UserRepository userRepository;
+
+  private final PasswordEncoder passwordEncoder;
 
   public boolean createUser(UserCommand command) {
 
@@ -24,7 +27,7 @@ public class UserWriteService {
 
     userRepository.save(User.builder()
         .username(command.getUsername())
-        .password(command.getPassword())
+        .password(passwordEncoder.encode(command.getPassword()))
         .build());
 
     return true;
