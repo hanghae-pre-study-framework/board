@@ -18,13 +18,13 @@ public class PostReadService {
   private final PostMapper postMapper;
 
   public List<PostDto> getPosts() {
-    return postRepository.findAllByOrderByCreatedAtDesc().stream()
+    return postRepository.findAllByIsDestroyedOrderByCreatedAtDesc(false).stream()
         .map(postMapper::toDto)
         .toList();
   }
 
   public PostDto getPost(Long id) {
-    return postMapper.toDto(postRepository.findById(id)
+    return postMapper.toDto(postRepository.findByIdAndIsDestroyed(id, false)
         .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND)));
   }
 }

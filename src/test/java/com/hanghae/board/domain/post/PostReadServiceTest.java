@@ -13,6 +13,7 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.utill.PostTestFixture;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.jeasy.random.EasyRandom;
@@ -85,6 +86,22 @@ class PostReadServiceTest {
 
     BusinessException exception = assertThrows(BusinessException.class,
         () -> postReadService.getPost(존재하지_않는_ID));
+
+    assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getStatus(), exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getMessage(), exception.getMessage());
+  }
+
+  @Test
+  void 게시글_조회시_삭제된_게시글_조회시_예외발생() {
+    Post post = postFixture.nextObject(Post.class);
+
+    post.destroy(LocalDateTime.now());
+
+    Post 삭제된게시글 = postRepository.save(post);
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> postReadService.getPost(삭제된게시글.getId()));
 
     assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
     assertEquals(PostErrorCode.POST_NOT_FOUND.getStatus(), exception.getErrorCode().getStatus());

@@ -1,6 +1,7 @@
 package com.hanghae.board.domain.post.service;
 
 
+import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
@@ -41,6 +42,10 @@ public class PostWriteService {
     var post = postRepository.findWithPessimisticLockById(id)
         .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
+    if (post.isDestroyed()) {
+      throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
+    }
+
     if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
       throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
     }
@@ -49,5 +54,26 @@ public class PostWriteService {
         passwordEncoder.encode(postCommand.password()), LocalDateTime.now());
 
     return postMapper.toDto(postRepository.save(post));
+  }
+
+  @Transactional
+  public boolean deletePost(Long id, DeletePostCommand postCommand) {
+    var post = postRepository.findWithPessimisticLockById(id)
+        .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
+
+    if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
+      throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
+
+    }
+
+    if (post.isDestroyed()) {
+      throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
+    }
+
+    post.destroy(LocalDateTime.now());
+
+    postRepository.save(post);
+
+    return true;
   }
 }

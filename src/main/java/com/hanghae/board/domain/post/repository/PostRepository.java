@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Lock;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-  List<Post> findAllByOrderByCreatedAtDesc();
+  List<Post> findAllByIsDestroyedOrderByCreatedAtDesc(boolean isDestroyed);
+
+  Optional<Post> findByIdAndIsDestroyed(Long id, boolean isDestroyed);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   Optional<Post> findWithPessimisticLockById(Long id);
