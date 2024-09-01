@@ -1,4 +1,4 @@
-package com.hanghae.board.domain.user.application.controller;
+package com.hanghae.board.domain.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hanghae.board.domain.user.application.controller.UserController;
 import com.hanghae.board.domain.user.dto.UserCommand;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.service.UserWriteService;
