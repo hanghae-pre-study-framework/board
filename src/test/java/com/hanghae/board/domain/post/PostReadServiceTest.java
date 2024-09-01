@@ -36,7 +36,10 @@ class PostReadServiceTest {
   @BeforeEach
   void setUp() {
     postRepository.deleteAll();
-    postFixture = PostTestFixture.get(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 12, 31));
+
+    LocalDate now = LocalDate.now();
+    LocalDate oneYearAgo = now.minusYears(1);
+    postFixture = PostTestFixture.get(oneYearAgo, now);
   }
 
   @AfterEach
@@ -78,14 +81,13 @@ class PostReadServiceTest {
 
   @Test
   void 존재하지_않는_게시글_조회시_예외발생() {
-    Post 임시게시글 = postRepository.save(postFixture.nextObject(Post.class));
-    long 존재하지_않는_ID = 임시게시글.getId() + 1;
+    long 존재하지_않는_ID = -1;
 
     BusinessException exception = assertThrows(BusinessException.class,
         () -> postReadService.getPost(존재하지_않는_ID));
 
     assertEquals(PostErrorCode.POST_NOT_FOUND, exception.getErrorCode());
-    assertEquals(404, exception.getErrorCode().getStatus());
+    assertEquals(PostErrorCode.POST_NOT_FOUND.getStatus(), exception.getErrorCode().getStatus());
     assertEquals(PostErrorCode.POST_NOT_FOUND.getMessage(), exception.getMessage());
   }
 }

@@ -53,4 +53,13 @@ public class Post {
     this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
     this.updatedAt = updatedAt;
   }
+
+  public void update(String title, String content, String username, String password,
+      LocalDateTime updatedAt) {
+    this.title = Objects.requireNonNull(title);
+    this.content = Objects.requireNonNull(content);
+    this.username = Objects.requireNonNull(username);
+    this.password = Objects.requireNonNull(password);
+    this.updatedAt = updatedAt == null ? LocalDateTime.now() : updatedAt;
+  }
 }
