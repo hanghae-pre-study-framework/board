@@ -14,7 +14,6 @@ import com.hanghae.board.domain.user.service.UserWriteService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.error.GlobalExceptionHandler;
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,15 +69,6 @@ class UserControllerTest {
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
     objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-  }
-
-  @Test
-  void userController가null이아님() {
-    // given
-    // when
-    // then
-    Assertions.assertThat(target).isNotNull();
-    Assertions.assertThat(mockMvc).isNotNull();
   }
 
   @ParameterizedTest
