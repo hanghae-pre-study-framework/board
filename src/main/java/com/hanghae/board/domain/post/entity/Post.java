@@ -33,6 +33,9 @@ public class Post {
   @Column(nullable = false, length = 50)
   private String username;
 
+  @Column(nullable = false, length = 256)
+  private String password;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
@@ -40,11 +43,13 @@ public class Post {
   private LocalDateTime updatedAt;
 
   @Builder
-  private Post(String title, String content, String username, LocalDateTime createdAt,
+  private Post(String title, String content, String username, String password,
+      LocalDateTime createdAt,
       LocalDateTime updatedAt) {
     this.title = Objects.requireNonNull(title);
     this.content = Objects.requireNonNull(content);
     this.username = Objects.requireNonNull(username);
+    this.password = Objects.requireNonNull(password);
     this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
     this.updatedAt = updatedAt;
   }
