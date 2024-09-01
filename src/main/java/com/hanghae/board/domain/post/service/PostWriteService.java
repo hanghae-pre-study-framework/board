@@ -10,28 +10,28 @@ import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.mapper.PostMapper;
 import com.hanghae.board.domain.post.repository.PostRepository;
 import com.hanghae.board.error.BusinessException;
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PostWriteService {
 
   private final PostRepository postRepository;
   private final PostMapper postMapper;
   private final PasswordEncoder passwordEncoder;
 
-  public PostDto createPost(PostCommand postCommand) {
+  public PostDto createPost(@Valid PostCommand postCommand) {
 
     var post = Post
         .builder()
-        .title(postCommand.title())
-        .content(postCommand.content())
-        .username(postCommand.username())
-        .password(passwordEncoder.encode(postCommand.password()))
+        .title(postCommand.getTitle())
+        .content(postCommand.getContent())
+        .username(postCommand.getUsername())
+        .password(passwordEncoder.encode(postCommand.getPassword()))
         .build();
 
     return postMapper.toDto(postRepository.save(post));
@@ -46,12 +46,12 @@ public class PostWriteService {
       throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
     }
 
-    if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
+    if (!passwordEncoder.matches(postCommand.getPassword(), post.getPassword())) {
       throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
     }
 
-    post.update(postCommand.title(), postCommand.content(), postCommand.username(),
-        passwordEncoder.encode(postCommand.password()), LocalDateTime.now());
+    post.update(postCommand.getTitle(), postCommand.getContent(), postCommand.getUsername(),
+        passwordEncoder.encode(postCommand.getPassword()));
 
     return postMapper.toDto(postRepository.save(post));
   }
@@ -61,16 +61,16 @@ public class PostWriteService {
     var post = postRepository.findWithPessimisticLockById(id)
         .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
-    if (!passwordEncoder.matches(postCommand.password(), post.getPassword())) {
-      throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
-
-    }
-
     if (post.isDestroyed()) {
       throw new BusinessException(PostErrorCode.POST_ALREADY_DELETED);
     }
 
-    post.destroy(LocalDateTime.now());
+    if (!passwordEncoder.matches(postCommand.getPassword(), post.getPassword())) {
+      throw new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH);
+
+    }
+
+    post.destroy();
 
     postRepository.save(post);
 

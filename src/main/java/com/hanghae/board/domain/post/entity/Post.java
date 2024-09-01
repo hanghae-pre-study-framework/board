@@ -2,76 +2,72 @@ package com.hanghae.board.domain.post.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Entity
+@Table(name = "posts", indexes = @Index(name = "idx_posts_created_at", columnList = "created_at"))
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "posts", indexes = @Index(name = "idx_posts_created_at", columnList = "created_at"))
-@Entity
+@AllArgsConstructor
+@Builder
 public class Post {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @NotEmpty(message = "제목은 비어있을 수 없습니다")
   @Column(nullable = false, length = 200)
   private String title;
 
+  @NotEmpty(message = "내용은 비어있을 수 없습니다")
   @Column(nullable = false)
   private String content;
 
+  @NotEmpty(message = "사용자 이름은 비어있을 수 없습니다")
   @Column(nullable = false, length = 50)
   private String username;
 
+  @NotEmpty(message = "비밀번호는 비어있을 수 없습니다")
   @Column(nullable = false, length = 256)
   private String password;
 
+  @Builder.Default
   @Column(nullable = false)
-  @ColumnDefault("false")
   private boolean isDestroyed = false;
 
-  @Column(name = "created_at", nullable = false, updatable = false)
+  @CreatedDate
+  @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
-  @Column(name = "updated_at")
+  @LastModifiedDate
+  @Column(insertable = false)
   private LocalDateTime updatedAt;
 
-  @Builder
-  private Post(String title, String content, String username, String password,
-      Boolean isDestroyed,
-      LocalDateTime createdAt,
-      LocalDateTime updatedAt) {
-    this.title = Objects.requireNonNull(title);
-    this.content = Objects.requireNonNull(content);
-    this.username = Objects.requireNonNull(username);
-    this.password = Objects.requireNonNull(password);
-    this.isDestroyed = isDestroyed != null && isDestroyed;
-    this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
-    this.updatedAt = updatedAt;
+  public void update(String title, String content, String username, String password) {
+    this.title = title;
+    this.content = content;
+    this.username = username;
+    this.password = password;
   }
 
-  public void update(String title, String content, String username, String password,
-      LocalDateTime updatedAt) {
-    this.title = Objects.requireNonNull(title);
-    this.content = Objects.requireNonNull(content);
-    this.username = Objects.requireNonNull(username);
-    this.password = Objects.requireNonNull(password);
-    this.updatedAt = updatedAt == null ? LocalDateTime.now() : updatedAt;
-  }
-
-  public void destroy(LocalDateTime updatedAt) {
+  public void destroy() {
     this.isDestroyed = true;
-    this.updatedAt = updatedAt == null ? LocalDateTime.now() : updatedAt;
   }
 }
