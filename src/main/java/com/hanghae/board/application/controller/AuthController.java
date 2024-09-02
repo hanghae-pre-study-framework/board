@@ -17,7 +17,7 @@ public class AuthController {
 
   private final UserWriteService userWriteService;
 
-  @PostMapping
+  @PostMapping("/sign-up")
   public ResponseEntity<Boolean> signUp(@RequestBody @Valid UserCommand command) {
     Boolean result = userWriteService.createUser(command);
 

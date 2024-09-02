@@ -1,4 +1,4 @@
-package com.hanghae.board.domain.controller;
+package com.hanghae.board.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -75,7 +75,7 @@ class AuthControllerTest {
   @MethodSource("provideInvalidUserCommands")
   void 회원가입_실패_유효성검사(UserCommand command) throws Exception {
     // given
-    final String url = "/auth";
+    final String url = "/auth/sign-up";
 
     // when
     final ResultActions resultActions = mockMvc.perform(post(url)
@@ -89,7 +89,7 @@ class AuthControllerTest {
   @Test
   void 회원가입_실패_유저네임중복() throws Exception {
     // given
-    final String url = "/auth";
+    final String url = "/auth/sign-up";
     final UserCommand command = UserCommand.builder()
         .username("test")
         .password("password")
@@ -109,7 +109,7 @@ class AuthControllerTest {
   @Test
   void 회원가입_성공() throws Exception {
     // given
-    final String url = "/auth";
+    final String url = "/auth/sign-up";
     final UserCommand command = UserCommand.builder()
         .username("Test123")
         .password("Password1234")
