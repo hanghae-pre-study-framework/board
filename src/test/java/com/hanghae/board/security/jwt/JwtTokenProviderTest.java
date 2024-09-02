@@ -17,7 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 class JwtTokenProviderTest {
 
   private final String SECRET = "testsecrettestsecrettestsecrettestsecrettestsecret";
-  private final long EXPIRATION = 3600000; // 1 hour
+  private final long EXPIRATION = 3600; // 1 hour
   private JwtTokenProvider jwtTokenProvider;
   @Mock
   private Authentication authentication;
