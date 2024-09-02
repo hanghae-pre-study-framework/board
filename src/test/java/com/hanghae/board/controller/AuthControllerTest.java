@@ -1,6 +1,7 @@
 package com.hanghae.board.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -8,11 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hanghae.board.application.controller.AuthController;
+import com.hanghae.board.domain.auth.dto.LoginDto;
+import com.hanghae.board.domain.auth.exception.AuthErrorCode;
 import com.hanghae.board.domain.user.dto.UserCommand;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.service.UserWriteService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.error.GlobalExceptionHandler;
+import com.hanghae.board.security.jwt.JwtTokenProvider;
+import java.util.Collections;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +28,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,6 +44,13 @@ class AuthControllerTest {
 
   @Mock
   private UserWriteService userWriteService;
+
+  @Mock
+  private AuthenticationManager authenticationManager;
+
+  @Mock
+  private JwtTokenProvider jwtTokenProvider;
+
 
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
@@ -122,5 +138,70 @@ class AuthControllerTest {
 
     // then
     resultActions.andExpect(status().isOk());
+  }
+
+  @Test
+  void 로그인_실패_존재하지않는유저() throws Exception {
+    // given
+    final String url = "/auth/login";
+    final LoginDto loginDto = LoginDto.builder()
+        .username("testuser")
+        .password("testpassword")
+        .build();
+    doThrow(new BusinessException(UserErrorCode.USER_NOT_FOUND))
+        .when(authenticationManager).authenticate(any(Authentication.class));
+
+    // when
+    final ResultActions resultActions = mockMvc.perform(post(url)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(loginDto)));
+
+    // then
+    resultActions.andExpect(status().isNotFound());
+  }
+
+  @Test
+  void 로그인_실패_비밀번호불일치() throws Exception {
+    // given
+    final String url = "/auth/login";
+    final LoginDto loginDto = LoginDto.builder()
+        .username("testuser")
+        .password("testpassword")
+        .build();
+    doThrow(new BusinessException(AuthErrorCode.BAD_CREDENTIALS))
+        .when(authenticationManager).authenticate(any(Authentication.class));
+
+    // when
+    final ResultActions resultActions = mockMvc.perform(post(url)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(loginDto)));
+
+    // then
+    resultActions.andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void 로그인_성공() throws Exception {
+    // given
+    final String url = "/auth/login";
+    final LoginDto loginDto = LoginDto.builder()
+        .username("testuser")
+        .password("testpassword")
+        .build();
+    final Authentication authentication = new UsernamePasswordAuthenticationToken(
+        "testuser", null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+    );
+    doReturn(authentication).when(authenticationManager).authenticate(any(Authentication.class));
+    doReturn("test.jwt.token").when(jwtTokenProvider).createToken(any(Authentication.class));
+
+    // when
+    final ResultActions resultActions = mockMvc.perform(post(url)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(loginDto)));
+
+    // then
+    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(
+        result -> result.getResponse().getHeader("Authorization").equals("Bearer test.jwt.token"));
   }
 }

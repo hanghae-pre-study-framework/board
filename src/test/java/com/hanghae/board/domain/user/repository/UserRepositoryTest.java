@@ -31,7 +31,7 @@ class UserRepositoryTest {
   }
 
   @Test
-  void 유저조회() {
+  void 유저조회ById() {
     // given
     User user = User.builder()
         .username("username")
@@ -41,6 +41,24 @@ class UserRepositoryTest {
 
     // when
     final User foundUser = userRepository.findById(savedUser.getId()).orElseThrow();
+
+    // then
+    assertThat(foundUser.getId()).isEqualTo(savedUser.getId());
+    assertThat(foundUser.getUsername()).isEqualTo(savedUser.getUsername());
+    assertThat(foundUser.getPassword()).isEqualTo(savedUser.getPassword());
+  }
+
+  @Test
+  void 유저조회ByUsername() {
+    // given
+    User user = User.builder()
+        .username("username")
+        .password("password")
+        .build();
+    final User savedUser = userRepository.save(user);
+
+    // when
+    final User foundUser = userRepository.findByUsername(savedUser.getUsername()).orElseThrow();
 
     // then
     assertThat(foundUser.getId()).isEqualTo(savedUser.getId());
