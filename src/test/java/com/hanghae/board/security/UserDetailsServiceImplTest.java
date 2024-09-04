@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
+import com.hanghae.board.domain.user.dto.UserRole;
 import com.hanghae.board.domain.user.entity.User;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.repository.UserRepository;
@@ -43,7 +44,8 @@ public class UserDetailsServiceImplTest {
   void 유저로드_성공() {
     // given
     String username = "username";
-    doReturn(Optional.of(User.builder().username(username).password("password").build()))
+    doReturn(Optional.of(
+        User.builder().username(username).password("password").role(UserRole.USER).build()))
         .when(userRepository).findByUsername(username);
 
     // when
@@ -51,5 +53,7 @@ public class UserDetailsServiceImplTest {
 
     // then
     assertThat(result.getUsername()).isEqualTo(username);
+    assertThat(result.getPassword()).isEqualTo("password");
+    assertThat(result.getAuthorities()).hasSize(1);
   }
 }

@@ -2,6 +2,7 @@ package com.hanghae.board.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hanghae.board.domain.user.dto.UserRole;
 import com.hanghae.board.domain.user.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ class UserRepositoryTest {
     User user = User.builder()
         .username("username")
         .password("password")
+        .role(UserRole.USER)
         .build();
 
     // when
@@ -28,6 +30,7 @@ class UserRepositoryTest {
     assertThat(savedUser.getId()).isNotNull();
     assertThat(savedUser.getUsername()).isEqualTo("username");
     assertThat(savedUser.getPassword()).isEqualTo("password");
+    assertThat(savedUser.getRole()).isEqualTo(UserRole.USER);
   }
 
   @Test
@@ -36,6 +39,7 @@ class UserRepositoryTest {
     User user = User.builder()
         .username("username")
         .password("password")
+        .role(UserRole.USER)
         .build();
     final User savedUser = userRepository.save(user);
 
@@ -46,6 +50,7 @@ class UserRepositoryTest {
     assertThat(foundUser.getId()).isEqualTo(savedUser.getId());
     assertThat(foundUser.getUsername()).isEqualTo(savedUser.getUsername());
     assertThat(foundUser.getPassword()).isEqualTo(savedUser.getPassword());
+    assertThat(foundUser.getRole()).isEqualTo(savedUser.getRole());
   }
 
   @Test
@@ -54,6 +59,7 @@ class UserRepositoryTest {
     User user = User.builder()
         .username("username")
         .password("password")
+        .role(UserRole.USER)
         .build();
     final User savedUser = userRepository.save(user);
 
@@ -64,6 +70,7 @@ class UserRepositoryTest {
     assertThat(foundUser.getId()).isEqualTo(savedUser.getId());
     assertThat(foundUser.getUsername()).isEqualTo(savedUser.getUsername());
     assertThat(foundUser.getPassword()).isEqualTo(savedUser.getPassword());
+    assertThat(foundUser.getRole()).isEqualTo(savedUser.getRole());
   }
 
   @Test
@@ -72,6 +79,7 @@ class UserRepositoryTest {
     User user = User.builder()
         .username("username")
         .password("password")
+        .role(UserRole.USER)
         .build();
     userRepository.save(user);
 
