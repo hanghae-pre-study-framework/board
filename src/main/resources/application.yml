@@ -14,6 +14,9 @@ spring:
       hibernate:
         format_sql: ${JPA_FORMAT_SQL:false}
         highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
+  output:
+    ansi:
+      enabled: ${OUTPUT_ANSI_ENABLED:false}
   jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION}
