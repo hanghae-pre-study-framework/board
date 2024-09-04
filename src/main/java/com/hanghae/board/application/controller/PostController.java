@@ -33,7 +33,7 @@ public class PostController {
     return postReadService.getPosts();
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/{id:\\d+}")
   public ResponseEntity<PostDto> getPost(@PathVariable Long id) {
     PostDto post = postReadService.getPost(id);
 
@@ -48,7 +48,7 @@ public class PostController {
     return ResponseEntity.status(HttpStatus.CREATED).body(post);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/{id:\\d+}")
   public ResponseEntity<PostDto> update(@PathVariable Long id,
       @RequestBody UpdatePostCommand command) {
     PostDto post = postWriteService.updatePost(id, command);
@@ -56,7 +56,7 @@ public class PostController {
     return ResponseEntity.status(HttpStatus.OK).body(post);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{id:\\d+}")
   public ResponseEntity<Boolean> delete(@PathVariable Long id,
       @RequestBody DeletePostCommand command) {
     Boolean result = postWriteService.deletePost(id, command);
