@@ -10,6 +10,7 @@ import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.mapper.PostMapper;
 import com.hanghae.board.domain.post.repository.PostRepository;
 import com.hanghae.board.error.BusinessException;
+import com.hanghae.board.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,13 +25,13 @@ public class PostWriteService {
   private final PostMapper postMapper;
   private final PasswordEncoder passwordEncoder;
 
-  public PostDto createPost(@Valid PostCommand postCommand) {
+  public PostDto createPost(@Valid PostCommand postCommand, UserPrincipal currentUser) {
 
     var post = Post
         .builder()
         .title(postCommand.getTitle())
         .content(postCommand.getContent())
-        .username(postCommand.getUsername())
+        .username(currentUser.getUsername())
         .password(passwordEncoder.encode(postCommand.getPassword()))
         .build();
 

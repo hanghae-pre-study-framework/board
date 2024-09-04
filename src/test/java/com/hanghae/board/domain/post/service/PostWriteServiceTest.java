@@ -16,7 +16,10 @@ import com.hanghae.board.domain.post.entity.Post;
 import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.mapper.PostMapper;
 import com.hanghae.board.domain.post.repository.PostRepository;
+import com.hanghae.board.domain.user.dto.UserRole;
+import com.hanghae.board.domain.user.entity.User;
 import com.hanghae.board.error.BusinessException;
+import com.hanghae.board.security.UserPrincipal;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +51,7 @@ class PostWriteServiceTest {
   private PasswordEncoder passwordEncoder;
 
   @Test
+  @WithMockUser(roles = "USER")
   void 게시글단건생성_성공() {
     // given
     Post savedPost = post();
@@ -56,11 +61,17 @@ class PostWriteServiceTest {
         .username(USERNAME)
         .password(PASSWORD)
         .build();
+    User user = User.builder()
+        .id(1L)
+        .username(USERNAME)
+        .role(UserRole.USER)
+        .build();
+    UserPrincipal currentuser = new UserPrincipal(user);
     doReturn(ENCODED_PASSWORD).when(passwordEncoder).encode(PASSWORD);
     doReturn(savedPost).when(postRepository).save(any(Post.class));
 
     // when
-    PostDto result = postWriteService.createPost(postCommand);
+    PostDto result = postWriteService.createPost(postCommand, currentuser);
 
     // then
     assertThat(result.id()).isNotNull();

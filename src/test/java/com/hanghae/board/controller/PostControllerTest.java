@@ -6,12 +6,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hanghae.board.application.controller.PostController;
+import com.hanghae.board.config.SecurityConfig;
 import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
@@ -21,39 +25,45 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.error.GlobalExceptionHandler;
+import com.hanghae.board.security.jwt.JwtTokenProvider;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(PostController.class)
+@MockBean(JpaMetamodelMappingContext.class)
+@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class PostControllerTest {
 
-  @InjectMocks
-  private PostController target;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Mock
+  @MockBean
   private PostReadService postReadService;
 
-  @Mock
+  @MockBean
   private PostWriteService postWriteService;
 
+  @MockBean
+  private JwtTokenProvider jwtTokenProvider;
 
-  private MockMvc mockMvc;
+  @Autowired
   private ObjectMapper objectMapper;
 
   private static Stream<PostCommand> provideInvalidPostCommands() {
@@ -89,14 +99,6 @@ class PostControllerTest {
         .build();
   }
 
-  @BeforeEach
-  void init() {
-    mockMvc = MockMvcBuilders.standaloneSetup(target)
-        .setControllerAdvice(new GlobalExceptionHandler())
-        .build();
-    objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-  }
-
   @Test
   void 게시글조회_실패_존재하지않는게시글() throws Exception {
     // given
@@ -107,7 +109,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get(url, nonExistentPostId).contentType(MediaType.APPLICATION_JSON)
+        get(url, nonExistentPostId).contentType(MediaType.APPLICATION_JSON)
     );
 
     // then
@@ -126,7 +128,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/posts/{id}", postId)
+        get("/posts/{id}", postId)
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -150,7 +152,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/posts")
+        get("/posts")
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -170,13 +172,14 @@ class PostControllerTest {
 
   @ParameterizedTest
   @MethodSource("provideInvalidPostCommands")
+  @WithMockUser(username = "username")
   void 게시글작성_실패_필수값없음(PostCommand invalidPostCommand) throws Exception {
     // given
     final String url = "/posts";
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.post(url)
+        post(url)
             .content(objectMapper.writeValueAsString(invalidPostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -185,8 +188,10 @@ class PostControllerTest {
     resultActions.andExpect(status().isBadRequest());
   }
 
-  @Test
-  void 게시글작성_성공() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"USER", "ADMIN"})
+  @WithMockUser(username = "username")
+  void 게시글작성_성공(String role) throws Exception {
     // given
     final String url = "/posts";
     final String title = "title";
@@ -196,7 +201,8 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.post(url)
+        post(url)
+            .with(user("username").roles(role))
             .content(objectMapper.writeValueAsString(PostCommand.builder()
                 .title(title)
                 .content(content)
@@ -211,6 +217,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글수정_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -222,7 +229,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.put(url, nonExistentPostId)
+        put(url, nonExistentPostId)
             .content(objectMapper.writeValueAsString(updatePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -235,6 +242,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글수정_실패_비밀번호불일치() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -245,7 +253,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.put(url, postId)
+        put(url, postId)
             .content(objectMapper.writeValueAsString(updateCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -258,6 +266,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글수정_실패_게시글삭제됨() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -269,7 +278,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.put(url, postId)
+        put(url, postId)
             .content(objectMapper.writeValueAsString(updatePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -282,6 +291,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글수정_성공() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -291,7 +301,7 @@ class PostControllerTest {
 
     // when
     final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.put(url, postId)
+        put(url, postId)
             .content(objectMapper.writeValueAsString(updatePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -304,6 +314,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글삭제_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -327,6 +338,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글삭제_실패_비밀번호불일치() throws Exception {
     // given
     final String url = "/posts/{id}";
@@ -350,6 +362,7 @@ class PostControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "username")
   void 게시글삭제_성공() throws Exception {
     // given
     final String url = "/posts/{id}";
