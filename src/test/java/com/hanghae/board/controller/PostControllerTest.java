@@ -101,7 +101,7 @@ class PostControllerTest {
   void 게시글조회_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
-    Long nonExistentPostId = -1L;
+    Long nonExistentPostId = 1L;
     doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND)).when(postReadService)
         .getPost(nonExistentPostId);
 
@@ -214,7 +214,7 @@ class PostControllerTest {
   void 게시글수정_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
-    Long nonExistentPostId = -1L;
+    Long nonExistentPostId = 1L;
     UpdatePostCommand updatePostCommand = updatePostCommand("title", "content", "username",
         "password");
     doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND))
@@ -307,7 +307,7 @@ class PostControllerTest {
   void 게시글삭제_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
-    Long nonExistentPostId = -1L;
+    Long nonExistentPostId = 1L;
     DeletePostCommand deletePostCommand = new DeletePostCommand("password");
     doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND)).when(postWriteService)
         .deletePost(eq(nonExistentPostId), any(DeletePostCommand.class));
