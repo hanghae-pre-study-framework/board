@@ -5,6 +5,7 @@ import com.hanghae.board.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -51,8 +52,9 @@ public class SecurityConfig {
     // NOTE: 경로별 인증 설정
     http
         .authorizeHttpRequests((auth) -> auth
-            .requestMatchers("/auth/sign-up", "/auth/login", "/swagger-ui/**", "/v3/api-docs/**",
-                "/swagger-ui.html").permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+            .requestMatchers("/auth/sign-up", "/auth/login").permitAll()
+            .requestMatchers(HttpMethod.GET, "/posts").permitAll()
             .anyRequest().authenticated());
 
     http
