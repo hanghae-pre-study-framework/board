@@ -1,5 +1,6 @@
 package com.hanghae.board.error;
 
+import com.hanghae.board.domain.auth.exception.AuthErrorCode;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +24,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     log.warn("BusinessException occur: ", exception);
     return this.makeErrorResponseEntity(exception.getErrorCode());
   }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleBadCredentialsException(
+      BadCredentialsException exception) {
+    return this.makeErrorResponseEntity(AuthErrorCode.BAD_CREDENTIALS);
+  }
+
 
   @ExceptionHandler({Exception.class})
   public ResponseEntity<ErrorResponse> handleException(final Exception exception) {

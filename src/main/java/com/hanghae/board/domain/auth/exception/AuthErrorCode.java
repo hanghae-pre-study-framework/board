@@ -1,4 +1,4 @@
-package com.hanghae.board.domain.user.exception;
+package com.hanghae.board.domain.auth.exception;
 
 import com.hanghae.board.error.ErrorCode;
 import lombok.Getter;
@@ -7,9 +7,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserErrorCode implements ErrorCode {
-  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-  USERNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 사용중인 유저 이름입니다."),
+public enum AuthErrorCode implements ErrorCode {
+  BAD_CREDENTIALS(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 잘못되었습니다."),
   ;
 
   private final HttpStatus status;
