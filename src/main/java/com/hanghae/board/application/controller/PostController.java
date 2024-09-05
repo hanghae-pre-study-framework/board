@@ -1,6 +1,5 @@
 package com.hanghae.board.application.controller;
 
-import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
@@ -54,17 +53,19 @@ public class PostController {
   }
 
   @PutMapping("/{id:\\d+}")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public ResponseEntity<PostDto> update(@PathVariable Long id,
-      @RequestBody UpdatePostCommand command) {
-    PostDto post = postWriteService.updatePost(id, command);
+      @RequestBody UpdatePostCommand command, @CurrentUser UserPrincipal currentUser) {
+    PostDto post = postWriteService.updatePost(id, command, currentUser);
 
     return ResponseEntity.status(HttpStatus.OK).body(post);
   }
 
   @DeleteMapping("/{id:\\d+}")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public ResponseEntity<Boolean> delete(@PathVariable Long id,
-      @RequestBody DeletePostCommand command) {
-    Boolean result = postWriteService.deletePost(id, command);
+      @CurrentUser UserPrincipal currentUser) {
+    Boolean result = postWriteService.deletePost(id, currentUser);
 
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }

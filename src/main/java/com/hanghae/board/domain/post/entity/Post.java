@@ -44,10 +44,6 @@ public class Post {
   @Column(nullable = false, length = 50)
   private String username;
 
-  @NotEmpty(message = "비밀번호는 비어있을 수 없습니다")
-  @Column(nullable = false, length = 256)
-  private String password;
-
   @Builder.Default
   @Column(nullable = false)
   private boolean isDestroyed = false;
@@ -60,11 +56,9 @@ public class Post {
   @Column(insertable = false)
   private LocalDateTime updatedAt;
 
-  public void update(String title, String content, String username, String password) {
+  public void update(String title, String content) {
     this.title = title;
     this.content = content;
-    this.username = username;
-    this.password = password;
   }
 
   public void destroy() {

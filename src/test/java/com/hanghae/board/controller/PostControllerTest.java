@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.board.application.controller.PostController;
 import com.hanghae.board.config.SecurityConfig;
-import com.hanghae.board.domain.post.dto.DeletePostCommand;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
@@ -25,7 +24,9 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.error.GlobalExceptionHandler;
+import com.hanghae.board.security.UserPrincipal;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
+import com.hanghae.board.util.WithMockCustomUser;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -66,36 +66,27 @@ class PostControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
+
   private static Stream<PostCommand> provideInvalidPostCommands() {
     return Stream.of(
-        postCommand(null, "content", "username", "password"),
-        postCommand("title", null, "username", "password"),
-        postCommand("title", "content", null, "password"),
-        postCommand("title", "content", "username", null),
-        postCommand("", "content", "username", "password"),
-        postCommand("title", "", "username", "password"),
-        postCommand("title", "content", "", "password"),
-        postCommand("title", "content", "username", "")
+        postCommand(null, "content"),
+        postCommand("title", null),
+        postCommand("", "content"),
+        postCommand("title", "")
     );
   }
 
-  private static PostCommand postCommand(String title, String content, String username,
-      String password) {
+  private static PostCommand postCommand(String title, String content) {
     return PostCommand.builder()
         .title(title)
         .content(content)
-        .username(username)
-        .password(password)
         .build();
   }
 
-  private static UpdatePostCommand updatePostCommand(String title, String content, String username,
-      String password) {
+  private static UpdatePostCommand updatePostCommand(String title, String content) {
     return UpdatePostCommand.builder()
         .title(title)
         .content(content)
-        .username(username)
-        .password(password)
         .build();
   }
 
@@ -172,7 +163,7 @@ class PostControllerTest {
 
   @ParameterizedTest
   @MethodSource("provideInvalidPostCommands")
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글작성_실패_필수값없음(PostCommand invalidPostCommand) throws Exception {
     // given
     final String url = "/posts";
@@ -190,14 +181,12 @@ class PostControllerTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"USER", "ADMIN"})
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글작성_성공(String role) throws Exception {
     // given
     final String url = "/posts";
     final String title = "title";
     final String content = "content";
-    final String username = "username";
-    final String password = "password";
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -206,8 +195,6 @@ class PostControllerTest {
             .content(objectMapper.writeValueAsString(PostCommand.builder()
                 .title(title)
                 .content(content)
-                .username(username)
-                .password(password)
                 .build()))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -217,15 +204,15 @@ class PostControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글수정_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long nonExistentPostId = 1L;
-    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content", "username",
-        "password");
+    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content");
     doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND))
-        .when(postWriteService).updatePost(eq(nonExistentPostId), any(UpdatePostCommand.class));
+        .when(postWriteService)
+        .updatePost(eq(nonExistentPostId), any(UpdatePostCommand.class), any());
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -238,18 +225,19 @@ class PostControllerTest {
     resultActions.andExpect(status().isNotFound());
 
     // verify
-    verify(postWriteService).updatePost(eq(nonExistentPostId), any(UpdatePostCommand.class));
+    verify(postWriteService).updatePost(eq(nonExistentPostId), any(UpdatePostCommand.class), any());
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글수정_실패_비밀번호불일치() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long postId = 1L;
-    UpdatePostCommand updateCommand = updatePostCommand("title", "content", "username", "password");
-    doThrow(new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH))
-        .when(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class));
+    UpdatePostCommand updateCommand = updatePostCommand("title", "content");
+    doThrow(new BusinessException(PostErrorCode.POST_UPDATE_FORBIDDEN))
+        .when(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class), any(
+            UserPrincipal.class));
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -262,19 +250,20 @@ class PostControllerTest {
     resultActions.andExpect(status().isForbidden());
 
     // verify
-    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class));
+    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class), any(
+        UserPrincipal.class));
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글수정_실패_게시글삭제됨() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long postId = 1L;
-    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content", "username",
-        "password");
+    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content");
     doThrow(new BusinessException(PostErrorCode.POST_ALREADY_DELETED))
-        .when(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class));
+        .when(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class), any(
+            UserPrincipal.class));
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -287,17 +276,17 @@ class PostControllerTest {
     resultActions.andExpect(status().isBadRequest());
 
     // verify
-    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class));
+    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class), any(
+        UserPrincipal.class));
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글수정_성공() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long postId = 1L;
-    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content", "username",
-        "password");
+    UpdatePostCommand updatePostCommand = updatePostCommand("title", "content");
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -310,23 +299,22 @@ class PostControllerTest {
     resultActions.andExpect(status().isOk());
 
     // verify
-    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class));
+    verify(postWriteService).updatePost(eq(postId), any(UpdatePostCommand.class), any(
+        UserPrincipal.class));
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글삭제_실패_존재하지않는게시글() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long nonExistentPostId = 1L;
-    DeletePostCommand deletePostCommand = new DeletePostCommand("password");
     doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND)).when(postWriteService)
-        .deletePost(eq(nonExistentPostId), any(DeletePostCommand.class));
+        .deletePost(eq(nonExistentPostId), any(UserPrincipal.class));
 
     // when
     final ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.delete(url, nonExistentPostId)
-            .content(objectMapper.writeValueAsString(deletePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -334,23 +322,21 @@ class PostControllerTest {
     resultActions.andExpect(status().isNotFound());
 
     // verify
-    verify(postWriteService).deletePost(eq(nonExistentPostId), any(DeletePostCommand.class));
+    verify(postWriteService).deletePost(eq(nonExistentPostId), any(UserPrincipal.class));
   }
 
   @Test
-  @WithMockUser(username = "username")
-  void 게시글삭제_실패_비밀번호불일치() throws Exception {
+  @WithMockCustomUser(username = "anotherUser")
+  void 게시글삭제_실패_수정권한없음() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long postId = 1L;
-    DeletePostCommand deletePostCommand = new DeletePostCommand("password");
-    doThrow(new BusinessException(PostErrorCode.POST_PASSWORD_MISMATCH)).when(postWriteService)
-        .deletePost(eq(postId), any(DeletePostCommand.class));
+    doThrow(new BusinessException(PostErrorCode.POST_UPDATE_FORBIDDEN)).when(postWriteService)
+        .deletePost(eq(postId), any(UserPrincipal.class));
 
     // when
     final ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.delete(url, postId)
-            .content(objectMapper.writeValueAsString(deletePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -358,21 +344,19 @@ class PostControllerTest {
     resultActions.andExpect(status().isForbidden());
 
     // verify
-    verify(postWriteService).deletePost(eq(postId), any(DeletePostCommand.class));
+    verify(postWriteService).deletePost(eq(postId), any(UserPrincipal.class));
   }
 
   @Test
-  @WithMockUser(username = "username")
+  @WithMockCustomUser(username = "username")
   void 게시글삭제_성공() throws Exception {
     // given
     final String url = "/posts/{id}";
     Long postId = 1L;
-    DeletePostCommand deletePostCommand = new DeletePostCommand("password");
 
     // when
     final ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.delete(url, postId)
-            .content(objectMapper.writeValueAsString(deletePostCommand))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -380,7 +364,7 @@ class PostControllerTest {
     resultActions.andExpect(status().isOk());
 
     // verify
-    verify(postWriteService).deletePost(eq(postId), any(DeletePostCommand.class));
+    verify(postWriteService).deletePost(eq(postId), any(UserPrincipal.class));
   }
 
 }

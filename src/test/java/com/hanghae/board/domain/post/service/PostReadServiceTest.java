@@ -126,7 +126,6 @@ class PostReadServiceTest {
         .title(TITLE)
         .content(CONTENT)
         .username(USERNAME)
-        .password(ENCODED_PASSWORD)
         .build();
   }
 }

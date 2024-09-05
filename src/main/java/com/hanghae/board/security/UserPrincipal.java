@@ -1,8 +1,8 @@
 package com.hanghae.board.security;
 
 import com.hanghae.board.domain.user.entity.User;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,9 +12,17 @@ public class UserPrincipal implements UserDetails {
 
   private final User user;
 
+  public User getUser() {
+    return this.user;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(() -> user.getRole().name());
+    Collection<GrantedAuthority> collection = new ArrayList<>();
+
+    collection.add((GrantedAuthority) () -> user.getRole().getAuthority());
+
+    return collection;
   }
 
   @Override

@@ -21,19 +21,16 @@ class PostRepositoryTest {
         .title("제목1")
         .content("내용1")
         .username("작성자1")
-        .password("비밀번호1")
         .build();
     final Post post2 = Post.builder()
         .title("제목2")
         .content("내용2")
         .username("작성자2")
-        .password("비밀번호2")
         .build();
     final Post post3 = Post.builder()
         .title("제목3")
         .content("내용3")
         .username("작성자3")
-        .password("비밀번호3")
         .build();
     postRepository.save(post1);
     postRepository.save(post2);
@@ -55,7 +52,6 @@ class PostRepositoryTest {
         .title("제목")
         .content("내용")
         .username("작성자")
-        .password("비밀번호")
         .build();
 
     // when
@@ -66,7 +62,6 @@ class PostRepositoryTest {
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
     assertThat(result.getUsername()).isEqualTo("작성자");
-    assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -78,7 +73,6 @@ class PostRepositoryTest {
         .title("제목")
         .content("내용")
         .username("작성자")
-        .password("비밀번호")
         .build();
     final Post savedPost = postRepository.save(post);
 
@@ -96,7 +90,6 @@ class PostRepositoryTest {
         .title("제목")
         .content("내용")
         .username("작성자")
-        .password("비밀번호")
         .build();
     final Post savedPost = postRepository.save(post);
 
@@ -108,7 +101,6 @@ class PostRepositoryTest {
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
     assertThat(result.getUsername()).isEqualTo("작성자");
-    assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -120,7 +112,6 @@ class PostRepositoryTest {
         .title("제목")
         .content("내용")
         .username("작성자")
-        .password("비밀번호")
         .build();
     final Post savedPost = postRepository.save(post);
 
@@ -132,7 +123,6 @@ class PostRepositoryTest {
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
     assertThat(result.getUsername()).isEqualTo("작성자");
-    assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -144,12 +134,11 @@ class PostRepositoryTest {
         .title("제목")
         .content("내용")
         .username("작성자")
-        .password("비밀번호")
         .build();
     final Post savedPost = postRepository.save(post);
 
     // when
-    savedPost.update("수정된 제목", "수정된 내용", "작성자", "비밀번호");
+    savedPost.update("수정된 제목", "수정된 내용");
 
     // then
     final Post result = postRepository.findById(savedPost.getId()).get();
@@ -157,7 +146,6 @@ class PostRepositoryTest {
     assertThat(result.getTitle()).isEqualTo("수정된 제목");
     assertThat(result.getContent()).isEqualTo("수정된 내용");
     assertThat(result.getUsername()).isEqualTo("작성자");
-    assertThat(result.getPassword()).isEqualTo("비밀번호");
     assertThat(result.getCreatedAt()).isNotNull();
   }
 
