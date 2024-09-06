@@ -62,8 +62,8 @@ class PostReadServiceTest {
 
     // then
     Assertions.assertThat(posts).hasSize(2);
-    Assertions.assertThat(posts.get(0).id()).isEqualTo(2L);
-    Assertions.assertThat(posts.get(1).id()).isEqualTo(1L);
+    Assertions.assertThat(posts.get(0).getId()).isEqualTo(2L);
+    Assertions.assertThat(posts.get(1).getId()).isEqualTo(1L);
   }
 
 
@@ -108,10 +108,10 @@ class PostReadServiceTest {
     final PostDto result = target.getPost(postId);
 
     // then
-    Assertions.assertThat(result.id()).isEqualTo(postId);
-    Assertions.assertThat(result.title()).isEqualTo(TITLE);
-    Assertions.assertThat(result.content()).isEqualTo(CONTENT);
-    Assertions.assertThat(result.username()).isEqualTo(USERNAME);
+    Assertions.assertThat(result.getId()).isEqualTo(postId);
+    Assertions.assertThat(result.getTitle()).isEqualTo(TITLE);
+    Assertions.assertThat(result.getContent()).isEqualTo(CONTENT);
+    Assertions.assertThat(result.getUsername()).isEqualTo(USERNAME);
   }
 
 

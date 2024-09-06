@@ -62,10 +62,10 @@ class PostWriteServiceTest {
     PostDto result = target.createPost(postCommand, currentuser);
 
     // then
-    assertThat(result.id()).isNotNull();
-    assertThat(result.title()).isEqualTo(postCommand.getTitle());
-    assertThat(result.content()).isEqualTo(postCommand.getContent());
-    assertThat(result.username()).isEqualTo(savedPost.getUsername());
+    assertThat(result.getId()).isNotNull();
+    assertThat(result.getTitle()).isEqualTo(postCommand.getTitle());
+    assertThat(result.getContent()).isEqualTo(postCommand.getContent());
+    assertThat(result.getUsername()).isEqualTo(savedPost.getUsername());
 
     // verify
     verify(postRepository, times(1)).save(any(Post.class));
@@ -171,10 +171,10 @@ class PostWriteServiceTest {
     PostDto result = target.updatePost(postId, updatePostCommand, currentuser);
 
     // then
-    assertThat(result.id()).isEqualTo(postId);
-    assertThat(result.title()).isEqualTo(updatePostCommand.getTitle());
-    assertThat(result.content()).isEqualTo(updatePostCommand.getContent());
-    assertThat(result.username()).isEqualTo(updatedPost.getUsername());
+    assertThat(result.getId()).isEqualTo(postId);
+    assertThat(result.getTitle()).isEqualTo(updatePostCommand.getTitle());
+    assertThat(result.getContent()).isEqualTo(updatePostCommand.getContent());
+    assertThat(result.getUsername()).isEqualTo(updatedPost.getUsername());
 
     // verify
     verify(postRepository, times(1)).save(post);
@@ -207,10 +207,10 @@ class PostWriteServiceTest {
     PostDto result = target.updatePost(postId, updatePostCommand, currentuser);
 
     // then
-    assertThat(result.id()).isEqualTo(postId);
-    assertThat(result.title()).isEqualTo(updatePostCommand.getTitle());
-    assertThat(result.content()).isEqualTo(updatePostCommand.getContent());
-    assertThat(result.username()).isEqualTo(updatedPost.getUsername());
+    assertThat(result.getId()).isEqualTo(postId);
+    assertThat(result.getTitle()).isEqualTo(updatePostCommand.getTitle());
+    assertThat(result.getContent()).isEqualTo(updatePostCommand.getContent());
+    assertThat(result.getUsername()).isEqualTo(updatedPost.getUsername());
 
     // verify
     verify(postRepository, times(1)).save(post);

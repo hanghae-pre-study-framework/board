@@ -1,4 +1,4 @@
-package com.hanghae.board.controller;
+package com.hanghae.board.application.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.board.application.controller.PostController;
 import com.hanghae.board.config.SecurityConfig;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
@@ -155,8 +154,8 @@ class PostControllerTest {
         });
 
     assertThat(responses).hasSize(2);
-    assertThat(responses.get(0).id()).isEqualTo(2L);
-    assertThat(responses.get(0).createdAt()).isAfter(responses.get(1).createdAt());
+    assertThat(responses.get(0).getId()).isEqualTo(2L);
+    assertThat(responses.get(0).getCreatedAt()).isAfter(responses.get(1).getCreatedAt());
 
     verify(postReadService).getPosts();
   }
