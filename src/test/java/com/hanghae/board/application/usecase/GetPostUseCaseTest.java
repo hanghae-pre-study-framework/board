@@ -1,5 +1,6 @@
 package com.hanghae.board.application.usecase;
 
+import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
@@ -13,10 +14,6 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.service.UserReadService;
 import com.hanghae.board.error.BusinessException;
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
-import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -27,13 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class GetPostUseCaseTest {
-
-  private final FixtureMonkey SUT = FixtureMonkey.builder()
-      .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-      .plugin(new JakartaValidationPlugin())
-      .plugin(new SimpleValueJqwikPlugin())
-      .build();
-
 
   @InjectMocks
   private GetPostUseCase target;

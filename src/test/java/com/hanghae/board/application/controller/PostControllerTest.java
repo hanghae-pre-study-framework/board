@@ -1,5 +1,6 @@
 package com.hanghae.board.application.controller;
 
+import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,10 +28,6 @@ import com.hanghae.board.error.GlobalExceptionHandler;
 import com.hanghae.board.security.UserPrincipal;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
 import com.hanghae.board.util.WithMockCustomUser;
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
-import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -52,13 +49,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @WebMvcTest(PostController.class)
 @Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class PostControllerTest {
-
-  private final FixtureMonkey SUT = FixtureMonkey.builder()
-      .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-      .plugin(new JakartaValidationPlugin())
-      .plugin(new SimpleValueJqwikPlugin())
-      .build();
-
 
   @Autowired
   private MockMvc mockMvc;
