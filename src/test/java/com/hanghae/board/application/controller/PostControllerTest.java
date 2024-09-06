@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hanghae.board.application.usecase.GetPostUseCase;
 import com.hanghae.board.config.SecurityConfig;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
@@ -26,6 +27,10 @@ import com.hanghae.board.error.GlobalExceptionHandler;
 import com.hanghae.board.security.UserPrincipal;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
 import com.hanghae.board.util.WithMockCustomUser;
+import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin;
+import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +53,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class PostControllerTest {
 
+  private final FixtureMonkey SUT = FixtureMonkey.builder()
+      .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+      .plugin(new JakartaValidationPlugin())
+      .plugin(new SimpleValueJqwikPlugin())
+      .build();
+
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -56,6 +68,9 @@ class PostControllerTest {
 
   @MockBean
   private PostWriteService postWriteService;
+
+  @MockBean
+  private GetPostUseCase getPostUseCase;
 
   @MockBean
   private JwtTokenProvider jwtTokenProvider;
@@ -92,8 +107,8 @@ class PostControllerTest {
     // given
     final String url = "/posts/{id}";
     Long nonExistentPostId = 1L;
-    doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND)).when(postReadService)
-        .getPost(nonExistentPostId);
+    doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND)).when(getPostUseCase)
+        .execute(nonExistentPostId);
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -102,23 +117,14 @@ class PostControllerTest {
 
     // then
     resultActions.andExpect(status().isNotFound());
-
-    // verify
-    verify(postReadService).getPost(nonExistentPostId);
   }
 
   @Test
   void 단일게시글조회_성공() throws Exception {
     // given
     Long postId = 1L;
-    PostDto postDto = PostDto.builder()
-        .id(postId)
-        .title("Title")
-        .content("Content")
-        .userId(1L)
-        .createdAt(LocalDateTime.now())
-        .build();
-    doReturn(postDto).when(postReadService).getPost(postId);
+    PostDto postDto = SUT.giveMeOne(PostDto.class);
+    doReturn(postDto).when(getPostUseCase).execute(postId);
 
     // when
     final ResultActions resultActions = mockMvc.perform(
@@ -128,9 +134,6 @@ class PostControllerTest {
 
     // then
     resultActions.andExpect(status().isOk());
-
-    // verify
-    verify(postReadService).getPost(postId);
   }
 
   @Test

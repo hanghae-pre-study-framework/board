@@ -39,6 +39,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.23"
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.23"
 
     testCompileOnly 'org.projectlombok:lombok'
 

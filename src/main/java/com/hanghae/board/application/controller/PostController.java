@@ -1,5 +1,6 @@
 package com.hanghae.board.application.controller;
 
+import com.hanghae.board.application.usecase.GetPostUseCase;
 import com.hanghae.board.domain.post.dto.PostCommand;
 import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.dto.UpdatePostCommand;
@@ -29,6 +30,7 @@ public class PostController {
 
   private final PostReadService postReadService;
   private final PostWriteService postWriteService;
+  private final GetPostUseCase getPostUseCase;
 
   @GetMapping
   public List<PostDto> getPosts() {
@@ -37,7 +39,7 @@ public class PostController {
 
   @GetMapping("/{id:\\d+}")
   public ResponseEntity<PostDto> getPost(@PathVariable Long id) {
-    PostDto post = postReadService.getPost(id);
+    PostDto post = getPostUseCase.execute(id);
 
     return ResponseEntity.status(HttpStatus.OK).body(post);
   }
