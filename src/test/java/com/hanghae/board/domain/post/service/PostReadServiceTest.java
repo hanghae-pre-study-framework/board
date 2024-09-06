@@ -21,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -30,16 +29,12 @@ class PostReadServiceTest {
   private final String TITLE = "title";
   private final String CONTENT = "content";
   private final String USERNAME = "username";
-  private final String ENCODED_PASSWORD = "encodedPassword";
-
   @Spy
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
   @InjectMocks
-  private PostReadService postReadService;
+  private PostReadService target;
   @Mock
   private PostRepository postRepository;
-  @Mock
-  private PasswordEncoder passwordEncoder;
 
   @Test
   void 전체게시글조회_실패_존재하지않음() {
@@ -48,7 +43,7 @@ class PostReadServiceTest {
         .findAllByIsDestroyedOrderByCreatedAtDesc(false);
 
     // when
-    final List<PostDto> post = postReadService.getPosts();
+    final List<PostDto> post = target.getPosts();
 
     // then
     Assertions.assertThat(post).isEmpty();
@@ -63,7 +58,7 @@ class PostReadServiceTest {
         .findAllByIsDestroyedOrderByCreatedAtDesc(false);
 
     // when
-    final List<PostDto> posts = postReadService.getPosts();
+    final List<PostDto> posts = target.getPosts();
 
     // then
     Assertions.assertThat(posts).hasSize(2);
@@ -81,7 +76,7 @@ class PostReadServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postReadService.getPost(nonExistentPostId));
+        () -> target.getPost(nonExistentPostId));
 
     // then
     Assertions.assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
@@ -96,7 +91,7 @@ class PostReadServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postReadService.getPost(destroyedPostId));
+        () -> target.getPost(destroyedPostId));
 
     // then
     Assertions.assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
@@ -110,7 +105,7 @@ class PostReadServiceTest {
     doReturn(Optional.of(post)).when(postRepository).findByIdAndIsDestroyed(postId, false);
 
     // when
-    final PostDto result = postReadService.getPost(postId);
+    final PostDto result = target.getPost(postId);
 
     // then
     Assertions.assertThat(result.id()).isEqualTo(postId);

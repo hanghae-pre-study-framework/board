@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class PostRepositoryTest {
 
   @Autowired
-  private PostRepository postRepository;
+  private PostRepository target;
 
   @Test
   void 게시글_전체_조회_내림차순() {
@@ -32,12 +32,12 @@ class PostRepositoryTest {
         .content("내용3")
         .username("작성자3")
         .build();
-    postRepository.save(post1);
-    postRepository.save(post2);
-    postRepository.save(post3);
+    target.save(post1);
+    target.save(post2);
+    target.save(post3);
 
     // when
-    final List<Post> result = postRepository.findAllByIsDestroyedOrderByCreatedAtDesc(false);
+    final List<Post> result = target.findAllByIsDestroyedOrderByCreatedAtDesc(false);
 
     // then
     assertThat(result).hasSize(3);
@@ -55,7 +55,7 @@ class PostRepositoryTest {
         .build();
 
     // when
-    final Post result = postRepository.save(post);
+    final Post result = target.save(post);
 
     // then
     assertThat(result.getId()).isNotNull();
@@ -74,13 +74,13 @@ class PostRepositoryTest {
         .content("내용")
         .username("작성자")
         .build();
-    final Post savedPost = postRepository.save(post);
+    final Post savedPost = target.save(post);
 
     // when
-    postRepository.delete(savedPost);
+    target.delete(savedPost);
 
     // then
-    assertThat(postRepository.findById(savedPost.getId())).isEmpty();
+    assertThat(target.findById(savedPost.getId())).isEmpty();
   }
 
   @Test
@@ -91,10 +91,10 @@ class PostRepositoryTest {
         .content("내용")
         .username("작성자")
         .build();
-    final Post savedPost = postRepository.save(post);
+    final Post savedPost = target.save(post);
 
     // when
-    final Post result = postRepository.findById(savedPost.getId()).get();
+    final Post result = target.findById(savedPost.getId()).get();
 
     // then
     assertThat(result.getId()).isNotNull();
@@ -113,10 +113,10 @@ class PostRepositoryTest {
         .content("내용")
         .username("작성자")
         .build();
-    final Post savedPost = postRepository.save(post);
+    final Post savedPost = target.save(post);
 
     // when
-    final Post result = postRepository.findByIdAndIsDestroyed(savedPost.getId(), false).get();
+    final Post result = target.findByIdAndIsDestroyed(savedPost.getId(), false).get();
 
     // then
     assertThat(result.getId()).isNotNull();
@@ -135,13 +135,13 @@ class PostRepositoryTest {
         .content("내용")
         .username("작성자")
         .build();
-    final Post savedPost = postRepository.save(post);
+    final Post savedPost = target.save(post);
 
     // when
     savedPost.update("수정된 제목", "수정된 내용");
 
     // then
-    final Post result = postRepository.findById(savedPost.getId()).get();
+    final Post result = target.findById(savedPost.getId()).get();
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo("수정된 제목");
     assertThat(result.getContent()).isEqualTo("수정된 내용");

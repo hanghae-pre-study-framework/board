@@ -39,7 +39,7 @@ class PostWriteServiceTest {
   @Spy
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
   @InjectMocks
-  private PostWriteService postWriteService;
+  private PostWriteService target;
   @Mock
   private PostRepository postRepository;
 
@@ -59,7 +59,7 @@ class PostWriteServiceTest {
     doReturn(savedPost).when(postRepository).save(any(Post.class));
 
     // when
-    PostDto result = postWriteService.createPost(postCommand, currentuser);
+    PostDto result = target.createPost(postCommand, currentuser);
 
     // then
     assertThat(result.id()).isNotNull();
@@ -89,7 +89,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.updatePost(nonExistentPostId, updatePostCommand, currentuser));
+        () -> target.updatePost(nonExistentPostId, updatePostCommand, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
@@ -113,7 +113,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.updatePost(postId, updatePostCommand, currentuser));
+        () -> target.updatePost(postId, updatePostCommand, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_UPDATE_FORBIDDEN);
@@ -139,7 +139,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.updatePost(postId, updatePostCommand, currentuser));
+        () -> target.updatePost(postId, updatePostCommand, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_ALREADY_DELETED);
@@ -168,7 +168,7 @@ class PostWriteServiceTest {
     doReturn(updatedPost).when(postRepository).save(post);
 
     // when
-    PostDto result = postWriteService.updatePost(postId, updatePostCommand, currentuser);
+    PostDto result = target.updatePost(postId, updatePostCommand, currentuser);
 
     // then
     assertThat(result.id()).isEqualTo(postId);
@@ -204,7 +204,7 @@ class PostWriteServiceTest {
     doReturn(updatedPost).when(postRepository).save(post);
 
     // when
-    PostDto result = postWriteService.updatePost(postId, updatePostCommand, currentuser);
+    PostDto result = target.updatePost(postId, updatePostCommand, currentuser);
 
     // then
     assertThat(result.id()).isEqualTo(postId);
@@ -230,7 +230,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.deletePost(nonExistentPostId, currentuser));
+        () -> target.deletePost(nonExistentPostId, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
@@ -253,7 +253,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.deletePost(postId, currentuser));
+        () -> target.deletePost(postId, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_DELETE_FORBIDDEN);
@@ -277,7 +277,7 @@ class PostWriteServiceTest {
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
-        () -> postWriteService.deletePost(postId, currentuser));
+        () -> target.deletePost(postId, currentuser));
 
     // then
     assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_ALREADY_DELETED);
@@ -299,7 +299,7 @@ class PostWriteServiceTest {
     doReturn(Optional.of(post)).when(postRepository).findWithPessimisticLockById(postId);
 
     // when
-    final Boolean result = postWriteService.deletePost(postId, currentuser);
+    final Boolean result = target.deletePost(postId, currentuser);
 
     // then
     assertThat(result).isTrue();
@@ -321,7 +321,7 @@ class PostWriteServiceTest {
     doReturn(Optional.of(post)).when(postRepository).findWithPessimisticLockById(postId);
 
     // when
-    final Boolean result = postWriteService.deletePost(postId, currentuser);
+    final Boolean result = target.deletePost(postId, currentuser);
 
     // then
     assertThat(result).isTrue();

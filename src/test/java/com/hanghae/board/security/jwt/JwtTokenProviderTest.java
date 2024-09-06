@@ -18,13 +18,13 @@ class JwtTokenProviderTest {
 
   private final String SECRET = "testsecrettestsecrettestsecrettestsecrettestsecret";
   private final long EXPIRATION = 3600; // 1 hour
-  private JwtTokenProvider jwtTokenProvider;
+  private JwtTokenProvider target;
   @Mock
   private Authentication authentication;
 
   @BeforeEach
   void init() {
-    jwtTokenProvider = new JwtTokenProvider(SECRET, EXPIRATION);
+    target = new JwtTokenProvider(SECRET, EXPIRATION);
   }
 
   @Test
@@ -35,12 +35,12 @@ class JwtTokenProviderTest {
         .when(authentication).getAuthorities();
 
     // when
-    final String result = jwtTokenProvider.createToken(authentication);
+    final String result = target.createToken(authentication);
 
     // then
     assertThat(result).isNotBlank();
-    assertThat(jwtTokenProvider.validateToken(result)).isTrue();
-    assertThat(jwtTokenProvider.getUsernameFromToken(result)).isEqualTo("testUser");
+    assertThat(target.validateToken(result)).isTrue();
+    assertThat(target.getUsernameFromToken(result)).isEqualTo("testUser");
   }
 
   @Test
@@ -49,10 +49,10 @@ class JwtTokenProviderTest {
     doReturn("testUser").when(authentication).getName();
     doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
         .when(authentication).getAuthorities();
-    String token = jwtTokenProvider.createToken(authentication);
+    String token = target.createToken(authentication);
 
     // when
-    final Authentication result = jwtTokenProvider.getAuthentication(token);
+    final Authentication result = target.getAuthentication(token);
 
     // then
     assertThat(result).isNotNull();
@@ -85,7 +85,7 @@ class JwtTokenProviderTest {
 
     // when
     final Exception result = assertThrows(Exception.class,
-        () -> jwtTokenProvider.getUsernameFromToken(invalidToken));
+        () -> target.getUsernameFromToken(invalidToken));
 
     // then
     assertThat(result).isInstanceOf(Exception.class);
