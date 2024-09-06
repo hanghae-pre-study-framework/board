@@ -35,6 +35,7 @@ class PostWriteServiceTest {
   private final String TITLE = "title";
   private final String CONTENT = "content";
   private final String USERNAME = "username";
+  private final Long USER_ID = 1L;
 
   @Spy
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
@@ -52,7 +53,7 @@ class PostWriteServiceTest {
         .content(CONTENT)
         .build();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(USER_ID)
         .username(USERNAME)
         .role(UserRole.USER)
         .build());
@@ -65,7 +66,7 @@ class PostWriteServiceTest {
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo(postCommand.getTitle());
     assertThat(result.getContent()).isEqualTo(postCommand.getContent());
-    assertThat(result.getUsername()).isEqualTo(savedPost.getUsername());
+    assertThat(result.getUserId()).isEqualTo(currentuser.getUser().getId());
 
     // verify
     verify(postRepository, times(1)).save(any(Post.class));
@@ -81,7 +82,7 @@ class PostWriteServiceTest {
         .content(CONTENT)
         .build();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(USER_ID)
         .username(USERNAME)
         .role(UserRole.USER)
         .build());
@@ -96,7 +97,7 @@ class PostWriteServiceTest {
   }
 
   @Test
-  void 게시글수정_실패_유저네임불일치() {
+  void 게시글수정_실패_유저ID불일치() {
     // given
     Long postId = 1L;
     Post post = post();
@@ -105,7 +106,7 @@ class PostWriteServiceTest {
         .content(CONTENT)
         .build();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(-1L)
         .username("anotherUser")
         .role(UserRole.USER)
         .build());
@@ -131,7 +132,7 @@ class PostWriteServiceTest {
         .content(CONTENT)
         .build();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(USER_ID)
         .username(USERNAME)
         .role(UserRole.USER)
         .build());
@@ -160,7 +161,7 @@ class PostWriteServiceTest {
         .content(updatePostCommand.getContent())
         .build();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(USER_ID)
         .username(USERNAME)
         .role(UserRole.USER)
         .build());
@@ -174,7 +175,7 @@ class PostWriteServiceTest {
     assertThat(result.getId()).isEqualTo(postId);
     assertThat(result.getTitle()).isEqualTo(updatePostCommand.getTitle());
     assertThat(result.getContent()).isEqualTo(updatePostCommand.getContent());
-    assertThat(result.getUsername()).isEqualTo(updatedPost.getUsername());
+    assertThat(result.getUserId()).isEqualTo(updatedPost.getUserId());
 
     // verify
     verify(postRepository, times(1)).save(post);
@@ -210,7 +211,7 @@ class PostWriteServiceTest {
     assertThat(result.getId()).isEqualTo(postId);
     assertThat(result.getTitle()).isEqualTo(updatePostCommand.getTitle());
     assertThat(result.getContent()).isEqualTo(updatePostCommand.getContent());
-    assertThat(result.getUsername()).isEqualTo(updatedPost.getUsername());
+    assertThat(result.getUserId()).isEqualTo(updatedPost.getUserId());
 
     // verify
     verify(postRepository, times(1)).save(post);
@@ -240,12 +241,12 @@ class PostWriteServiceTest {
   }
 
   @Test
-  void 게시글삭제_실패_유저네임불일치() {
+  void 게시글삭제_실패_유저ID불일치() {
     // given
     Long postId = 1L;
     Post post = post();
     UserPrincipal currentuser = new UserPrincipal(User.builder()
-        .id(1L)
+        .id(-1L)
         .username("anotherUser")
         .role(UserRole.USER)
         .build());
@@ -335,7 +336,7 @@ class PostWriteServiceTest {
         .id(-1L)
         .title(TITLE)
         .content(CONTENT)
-        .username(USERNAME)
+        .userId(USER_ID)
         .build();
   }
 }

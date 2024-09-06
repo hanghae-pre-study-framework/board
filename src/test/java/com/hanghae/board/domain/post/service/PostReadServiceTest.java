@@ -28,7 +28,7 @@ class PostReadServiceTest {
 
   private final String TITLE = "title";
   private final String CONTENT = "content";
-  private final String USERNAME = "username";
+  private final Long USER_ID = 1L;
   @Spy
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
   @InjectMocks
@@ -111,7 +111,7 @@ class PostReadServiceTest {
     Assertions.assertThat(result.getId()).isEqualTo(postId);
     Assertions.assertThat(result.getTitle()).isEqualTo(TITLE);
     Assertions.assertThat(result.getContent()).isEqualTo(CONTENT);
-    Assertions.assertThat(result.getUsername()).isEqualTo(USERNAME);
+    Assertions.assertThat(result.getUserId()).isEqualTo(USER_ID);
   }
 
 
@@ -120,7 +120,7 @@ class PostReadServiceTest {
         .id(id)
         .title(TITLE)
         .content(CONTENT)
-        .username(USERNAME)
+        .userId(USER_ID)
         .build();
   }
 }

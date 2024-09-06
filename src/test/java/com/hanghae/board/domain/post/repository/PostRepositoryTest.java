@@ -2,12 +2,15 @@ package com.hanghae.board.domain.post.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hanghae.board.config.JpaAuditingConfig;
 import com.hanghae.board.domain.post.entity.Post;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
+@Import(JpaAuditingConfig.class)
 @DataJpaTest
 class PostRepositoryTest {
 
@@ -20,17 +23,17 @@ class PostRepositoryTest {
     final Post post1 = Post.builder()
         .title("제목1")
         .content("내용1")
-        .username("작성자1")
+        .userId(1L)
         .build();
     final Post post2 = Post.builder()
         .title("제목2")
         .content("내용2")
-        .username("작성자2")
+        .userId(1L)
         .build();
     final Post post3 = Post.builder()
         .title("제목3")
         .content("내용3")
-        .username("작성자3")
+        .userId(1L)
         .build();
     target.save(post1);
     target.save(post2);
@@ -51,7 +54,7 @@ class PostRepositoryTest {
     final Post post = Post.builder()
         .title("제목")
         .content("내용")
-        .username("작성자")
+        .userId(1L)
         .build();
 
     // when
@@ -61,7 +64,7 @@ class PostRepositoryTest {
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
-    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getUserId()).isEqualTo(1L);
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -72,7 +75,7 @@ class PostRepositoryTest {
     final Post post = Post.builder()
         .title("제목")
         .content("내용")
-        .username("작성자")
+        .userId(1L)
         .build();
     final Post savedPost = target.save(post);
 
@@ -89,7 +92,7 @@ class PostRepositoryTest {
     final Post post = Post.builder()
         .title("제목")
         .content("내용")
-        .username("작성자")
+        .userId(1L)
         .build();
     final Post savedPost = target.save(post);
 
@@ -100,7 +103,7 @@ class PostRepositoryTest {
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
-    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getUserId()).isEqualTo(1L);
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -111,7 +114,7 @@ class PostRepositoryTest {
     final Post post = Post.builder()
         .title("제목")
         .content("내용")
-        .username("작성자")
+        .userId(1L)
         .build();
     final Post savedPost = target.save(post);
 
@@ -122,7 +125,7 @@ class PostRepositoryTest {
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo("제목");
     assertThat(result.getContent()).isEqualTo("내용");
-    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getUserId()).isEqualTo(1L);
     assertThat(result.getCreatedAt()).isNotNull();
     assertThat(result.getUpdatedAt()).isNull();
   }
@@ -133,7 +136,7 @@ class PostRepositoryTest {
     final Post post = Post.builder()
         .title("제목")
         .content("내용")
-        .username("작성자")
+        .userId(1L)
         .build();
     final Post savedPost = target.save(post);
 
@@ -145,7 +148,7 @@ class PostRepositoryTest {
     assertThat(result.getId()).isNotNull();
     assertThat(result.getTitle()).isEqualTo("수정된 제목");
     assertThat(result.getContent()).isEqualTo("수정된 내용");
-    assertThat(result.getUsername()).isEqualTo("작성자");
+    assertThat(result.getUserId()).isEqualTo(1L);
     assertThat(result.getCreatedAt()).isNotNull();
   }
 

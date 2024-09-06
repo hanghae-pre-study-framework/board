@@ -111,7 +111,13 @@ class PostControllerTest {
   void 단일게시글조회_성공() throws Exception {
     // given
     Long postId = 1L;
-    PostDto postDto = new PostDto(postId, "Title", "Content", "author", LocalDateTime.now(), null);
+    PostDto postDto = PostDto.builder()
+        .id(postId)
+        .title("Title")
+        .content("Content")
+        .userId(1L)
+        .createdAt(LocalDateTime.now())
+        .build();
     doReturn(postDto).when(postReadService).getPost(postId);
 
     // when
@@ -133,8 +139,20 @@ class PostControllerTest {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime earlier = now.minusHours(1);
     List<PostDto> postList = Arrays.asList(
-        new PostDto(2L, "Title 2", "Content 2", "author2", now, null),
-        new PostDto(1L, "Title 1", "Content 1", "author1", earlier, null)
+        PostDto.builder()
+            .id(2L)
+            .title("Title2")
+            .content("Content2")
+            .userId(2L)
+            .createdAt(now)
+            .build(),
+        PostDto.builder()
+            .id(1L)
+            .title("Title1")
+            .content("Content1")
+            .userId(1L)
+            .createdAt(earlier)
+            .build()
     );
     doReturn(postList).when(postReadService).getPosts();
 

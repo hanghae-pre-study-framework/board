@@ -29,7 +29,7 @@ public class PostWriteService {
         .builder()
         .title(postCommand.getTitle())
         .content(postCommand.getContent())
-        .username(currentUser.getUsername())
+        .userId(currentUser.getUser().getId())
         .build();
 
     return postMapper.toDto(postRepository.save(post));
@@ -46,7 +46,7 @@ public class PostWriteService {
 
     boolean isAdmin = UserRole.ADMIN.equals(currentUser.getUser().getRole());
 
-    if (!isAdmin && !post.getUsername().equals(currentUser.getUsername())) {
+    if (!isAdmin && !post.getUserId().equals(currentUser.getUser().getId())) {
       throw new BusinessException(PostErrorCode.POST_UPDATE_FORBIDDEN);
     }
 
@@ -66,7 +66,7 @@ public class PostWriteService {
 
     boolean isAdmin = UserRole.ADMIN.equals(currentUser.getUser().getRole());
 
-    if (!isAdmin && !post.getUsername().equals(currentUser.getUsername())) {
+    if (!isAdmin && !post.getUserId().equals(currentUser.getUser().getId())) {
       throw new BusinessException(PostErrorCode.POST_DELETE_FORBIDDEN);
     }
 
