@@ -1,6 +1,7 @@
 package com.hanhae99.board.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -9,23 +10,29 @@ import java.sql.Timestamp;
 
 @Entity
 @Getter @Setter
+@Builder
 @Table(name = "boards")
 public class Board {
 
     @Id
-    @GeneratedValue
     @Column(name = "board_id")
-    private Long boardid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long boardId;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
-    @Column(name = "board_pwd")
+    @Column(nullable = false)
+    private String userBoardId;
+
+    @Column(name = "board_pwd", nullable = false)
     private String boardPwd;
 
     private Timestamp regDt;

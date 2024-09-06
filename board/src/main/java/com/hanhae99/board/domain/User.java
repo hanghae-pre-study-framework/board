@@ -11,11 +11,11 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -36,6 +36,9 @@ public class User {
     private Timestamp chgDt;
 
     private String chgId;
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Board> boards = new ArrayList<>();
 
 
 }
