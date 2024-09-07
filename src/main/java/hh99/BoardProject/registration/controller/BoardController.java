@@ -1,17 +1,13 @@
 package hh99.BoardProject.registration.controller;
 
 import hh99.BoardProject.registration.entity.BoardList;
-import hh99.BoardProject.registration.error.ErrorCodes;
+import hh99.BoardProject.registration.error.ReturnCodes;
 import hh99.BoardProject.registration.projection.PostSummaryProjection;
 import hh99.BoardProject.registration.userService.BoardDeleteService;
 import hh99.BoardProject.registration.userService.BoardWriteService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.hibernate.sql.results.spi.ListResultsConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import hh99.BoardProject.registration.userService.BoardService;
 
@@ -37,10 +33,10 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.CREATED).body(list);
         } else if(boardWriteService.registPost(list).getRegId() == ""){ //등록자 찾지못함
             //return (ResponseEntity<BoardList>) ResponseEntity.status(-10);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCodes.USER_NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ReturnCodes.USER_NOT_FOUND);
         }
         else if(boardWriteService.registPost(list).getPassword() == ""){ //비밀번호 누락
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCodes.MISSING_PASSWORD);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ReturnCodes.MISSING_PASSWORD);
         }
         else{
             return(ResponseEntity<BoardList>) ResponseEntity.badRequest();
@@ -74,7 +70,7 @@ public class BoardController {
         if(post != null)
             return ResponseEntity.ok(post);
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCodes.POST_NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ReturnCodes.POST_NOT_FOUND);
     }
 
 
@@ -86,7 +82,7 @@ public class BoardController {
         if(editedPost != null)
             return ResponseEntity.ok(editedPost);
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCodes.PASSWORD_NOT_CORRECT);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ReturnCodes.PASSWORD_NOT_CORRECT);
     }
 
     //게시글 삭제
