@@ -23,6 +23,7 @@ public class PostWriteService {
   private final PostRepository postRepository;
   private final PostMapper postMapper;
 
+  @Transactional
   public PostDto createPost(@Valid PostCommand postCommand, UserPrincipal currentUser) {
 
     var post = Post

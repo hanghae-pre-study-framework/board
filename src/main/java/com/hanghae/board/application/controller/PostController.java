@@ -57,7 +57,7 @@ public class PostController {
   @PutMapping("/{id:\\d+}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public ResponseEntity<PostDto> update(@PathVariable Long id,
-      @RequestBody UpdatePostCommand command, @CurrentUser UserPrincipal currentUser) {
+      @RequestBody @Valid UpdatePostCommand command, @CurrentUser UserPrincipal currentUser) {
     PostDto post = postWriteService.updatePost(id, command, currentUser);
 
     return ResponseEntity.status(HttpStatus.OK).body(post);

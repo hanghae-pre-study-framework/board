@@ -1,6 +1,5 @@
 package com.hanghae.board.security;
 
-import com.hanghae.board.domain.user.entity.User;
 import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.repository.UserRepository;
 import com.hanghae.board.error.BusinessException;
@@ -20,10 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(
-            () -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
-
-    return new UserPrincipal(user);
+    return new UserPrincipal(userRepository.findByUsername(username)
+        .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND)));
+  }
+  
+  public UserDetails loadUserById(Long id) {
+    return new UserPrincipal(userRepository.findById(id)
+        .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND)));
   }
 }
