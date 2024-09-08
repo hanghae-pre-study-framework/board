@@ -25,13 +25,13 @@ public class BoardList {
     @Column(name="contents")
     private String contents;
 
-    @Column(name= "password")
+    @Column(name= "password", nullable = false)
     private String password;
 
-    @Column(name= "use_yn")
+    @Column(name= "use_yn", nullable = false)
     private String useYn;
 
-    @Column(name="reg_id")
+    @Column(name="reg_id", nullable = false)
     private String regId;
 
     @Column(name="reg_date")

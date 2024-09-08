@@ -33,9 +33,14 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation' // 써 빈 검증기(Bean Validator)를 이용해 객체의 제약 조건을 검증하도록 지시하는 어노테이션
+	//testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation("org.springframework.boot:spring-boot-starter-validation") //jakarta.validation.Validator 타입의 빈 등록을 위해서
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'  // Spring Security
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 tasks.named('test') {
