@@ -1,5 +1,6 @@
 package com.hanghae.board.domain.user.service;
 
+import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
@@ -11,6 +12,7 @@ import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.mapper.UserMapper;
 import com.hanghae.board.domain.user.repository.UserRepository;
 import com.hanghae.board.error.BusinessException;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,5 +66,23 @@ class UserReadServiceTest {
     assertThat(result.getId()).isEqualTo(userId);
     assertThat(result.getUsername()).isEqualTo(user.getUsername());
     assertThat(result.getRole()).isEqualTo(user.getRole());
+  }
+
+  @Test
+  void 유저목록조회성공_ByIds() {
+    // given
+    final List<User> users = SUT.giveMe(User.class, 10);
+    final List<Long> userIds = users.stream()
+        .map(User::getId)
+        .toList();
+    doReturn(users).when(userRepository).findAllById(userIds);
+
+    // when
+    final List<UserDto> result = target.getUsers(userIds);
+
+    // then
+    assertThat(result).hasSize(10);
+    assertThat(result).usingRecursiveComparison()
+        .isEqualTo(userMapper.toDtos(users));
   }
 }

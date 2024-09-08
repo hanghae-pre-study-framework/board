@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class PostDto {
 
   @Positive
+  @NotNull
   private final Long id;
 
   @NotEmpty
@@ -27,6 +28,7 @@ public class PostDto {
   private final String content;
 
   @Positive
+  @NotNull
   private final Long userId;
 
   private final UserDto user;

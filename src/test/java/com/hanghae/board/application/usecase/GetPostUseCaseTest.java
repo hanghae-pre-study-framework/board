@@ -103,6 +103,7 @@ class GetPostUseCaseTest {
         .set("id", postId)
         .set("userId", userDto.getId())
         .set("user", userDto)
+        .set("isDestroyed", false)
         .sample();
 
     doReturn(postDto).when(postReadService).getPost(postId);

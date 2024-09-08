@@ -5,6 +5,7 @@ import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.mapper.UserMapper;
 import com.hanghae.board.domain.user.repository.UserRepository;
 import com.hanghae.board.error.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +22,7 @@ public class UserReadService {
         .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND)));
   }
 
+  public List<UserDto> getUsers(List<Long> userIds) {
+    return userMapper.toDtos(userRepository.findAllById(userIds));
+  }
 }
