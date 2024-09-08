@@ -1,5 +1,8 @@
 package com.hanghae.board.security.jwt;
 
+import com.hanghae.board.domain.user.dto.UserRole;
+import com.hanghae.board.domain.user.entity.User;
+import com.hanghae.board.security.UserPrincipal;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -14,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +68,16 @@ public class JwtTokenProvider {
             .map(SimpleGrantedAuthority::new)
             .toList();
 
-    UserDetails principal = new User(claims.getSubject(), "", authorities);
+    UserRole userRole = UserRole.valueOf(
+        authorities.iterator().next().getAuthority().replace("ROLE_", "")
+    );
+
+    UserDetails principal = new UserPrincipal(
+        User.builder()
+            .username(claims.getSubject())
+            .password("")
+            .role(userRole)
+            .build());
 
     log.debug("Authentication created for user: {}", claims.getSubject());
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);

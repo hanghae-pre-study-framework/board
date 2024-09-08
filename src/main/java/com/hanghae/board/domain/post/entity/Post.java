@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,13 +41,9 @@ public class Post {
   @Column(nullable = false)
   private String content;
 
-  @NotEmpty(message = "사용자 이름은 비어있을 수 없습니다")
+  @NotNull(message = "작성자는 비어있을 수 없습니다")
   @Column(nullable = false, length = 50)
-  private String username;
-
-  @NotEmpty(message = "비밀번호는 비어있을 수 없습니다")
-  @Column(nullable = false, length = 256)
-  private String password;
+  private Long userId;
 
   @Builder.Default
   @Column(nullable = false)
@@ -60,11 +57,9 @@ public class Post {
   @Column(insertable = false)
   private LocalDateTime updatedAt;
 
-  public void update(String title, String content, String username, String password) {
+  public void update(String title, String content) {
     this.title = title;
     this.content = content;
-    this.username = username;
-    this.password = password;
   }
 
   public void destroy() {

@@ -18,9 +18,4 @@ public class UpdatePostCommand {
   @NotEmpty
   private final String content;
 
-  @NotEmpty
-  private final String username;
-
-  @NotEmpty
-  private final String password;
 }
