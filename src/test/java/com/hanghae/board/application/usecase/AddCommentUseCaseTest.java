@@ -16,6 +16,7 @@ import com.hanghae.board.domain.post.dto.PostDto;
 import com.hanghae.board.domain.post.exception.PostErrorCode;
 import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.user.entity.User;
+import com.hanghae.board.domain.user.exception.UserErrorCode;
 import com.hanghae.board.domain.user.service.UserReadService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.security.UserPrincipal;
@@ -71,15 +72,15 @@ class AddCommentUseCaseTest {
     final UserPrincipal currentUser = new UserPrincipal(SUT.giveMeOne(User.class));
     final PostDto post = SUT.giveMeOne(PostDto.class);
     doReturn(post).when(postReadService).getPost(post.getId());
-    doThrow(new BusinessException(PostErrorCode.POST_NOT_FOUND))
-        .when(commentWriteService).createComment(post.getId(), command, currentUser);
+    doThrow(new BusinessException(UserErrorCode.USER_NOT_FOUND))
+        .when(userReadService).getUser(post.getUserId());
 
     // when
     final BusinessException result = assertThrows(BusinessException.class,
         () -> target.execute(post.getId(), command, currentUser));
 
     // then
-    assertThat(result.getErrorCode()).isEqualTo(PostErrorCode.POST_NOT_FOUND);
+    assertThat(result.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
   }
 
   @Test
