@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfo, String> {
     UserInfo findOneByUserName(String userName); //findOne 하나 find : array
+  //  boolean existByUserName(String userName);
     Optional<UserInfo> findByUserName(String userName);
 }

@@ -31,7 +31,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Username "+user.getUserName()+" already exists!");
         }
     }
-
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(@RequestBody UserInfo user){
         log.info("Login attempt for user: {}", user.getUserName());
