@@ -1,5 +1,6 @@
 package com.hanghae.board.config;
 
+import com.hanghae.board.security.UserDetailsServiceImpl;
 import com.hanghae.board.security.jwt.JwtAuthenticationFilter;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtTokenProvider jwtTokenProvider;
+
+  private final UserDetailsServiceImpl customUserDetailsService;
+
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -60,7 +64,7 @@ public class SecurityConfig {
             .anyRequest().authenticated());
 
     http
-        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
             UsernamePasswordAuthenticationFilter.class);
 
     // NOTE: 세션 비활성화

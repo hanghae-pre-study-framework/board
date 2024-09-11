@@ -98,6 +98,7 @@ class UserRepositoryTest {
     // given
     AtomicLong counter = new AtomicLong(0);
     final List<User> users = SUT.giveMeBuilder(User.class)
+        .setNull("id")
         .setLazy("username", () -> "username" + counter.getAndIncrement())
         .set("password", "password")
         .sampleList(10);

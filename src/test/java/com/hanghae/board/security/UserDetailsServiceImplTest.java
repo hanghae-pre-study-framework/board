@@ -1,5 +1,6 @@
 package com.hanghae.board.security;
 
+import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
@@ -18,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @ExtendWith(MockitoExtension.class)
-public class UserDetailsServiceImplTest {
+class UserDetailsServiceImplTest {
 
   @InjectMocks
   private UserDetailsServiceImpl target;
@@ -56,4 +57,34 @@ public class UserDetailsServiceImplTest {
     assertThat(result.getPassword()).isEqualTo("password");
     assertThat(result.getAuthorities()).hasSize(1);
   }
+
+  @Test
+  void 유저로드_실패_By_Id() {
+    // given
+    Long id = 1L;
+    doReturn(Optional.empty()).when(userRepository).findById(id);
+
+    // when
+    final BusinessException result = assertThrows(BusinessException.class,
+        () -> target.loadUserById(id));
+
+    // then
+    assertThat(result.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
+  }
+
+  @Test
+  void 유저로드_성공_By_Id() {
+    // given
+    User user = SUT.giveMeOne(User.class);
+    doReturn(Optional.of(user)).when(userRepository).findById(user.getId());
+
+    // when
+    final UserDetails result = target.loadUserById(user.getId());
+
+    // then
+    assertThat(result.getUsername()).isEqualTo(user.getUsername());
+    assertThat(result.getPassword()).isEqualTo(user.getPassword());
+    assertThat(result.getAuthorities()).hasSize(1);
+  }
+
 }

@@ -1,9 +1,12 @@
 package com.hanghae.board.security.jwt;
 
+import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
+import com.hanghae.board.domain.user.entity.User;
+import com.hanghae.board.security.UserPrincipal;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +33,8 @@ class JwtTokenProviderTest {
   @Test
   void 토큰생성_성공() {
     // given
-    doReturn("testUser").when(authentication).getName();
+    User user = SUT.giveMeBuilder(User.class).setNotNull("id").sample();
+    doReturn(new UserPrincipal(user)).when(authentication).getPrincipal();
     doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
         .when(authentication).getAuthorities();
 
@@ -40,25 +44,7 @@ class JwtTokenProviderTest {
     // then
     assertThat(result).isNotBlank();
     assertThat(target.validateToken(result)).isTrue();
-    assertThat(target.getUsernameFromToken(result)).isEqualTo("testUser");
-  }
-
-  @Test
-  void 토큰_인증정보조회_성공() {
-    // given
-    doReturn("testUser").when(authentication).getName();
-    doReturn(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
-        .when(authentication).getAuthorities();
-    String token = target.createToken(authentication);
-
-    // when
-    final Authentication result = target.getAuthentication(token);
-
-    // then
-    assertThat(result).isNotNull();
-    assertThat(result.getName()).isEqualTo("testUser");
-    assertThat(result.getAuthorities()).hasSize(1);
-    assertThat(result.getAuthorities().iterator().next().getAuthority()).isEqualTo("ROLE_USER");
+    assertThat(target.getUserIdFromToken(result)).isEqualTo(user.getId());
   }
 
   @Test
@@ -66,7 +52,8 @@ class JwtTokenProviderTest {
     // given
     JwtTokenProvider shortLivedProvider = new JwtTokenProvider(SECRET,
         1);
-    doReturn("testUser").when(authentication).getName();
+    User user = SUT.giveMeBuilder(User.class).setNotNull("id").sample();
+    doReturn(new UserPrincipal(user)).when(authentication).getPrincipal();
     doReturn(Collections.emptyList()).when(authentication).getAuthorities();
     String token = shortLivedProvider.createToken(authentication);
 
@@ -79,13 +66,13 @@ class JwtTokenProviderTest {
   }
 
   @Test
-  void 토큰사용자명조회_실패_유효하지않은토큰() {
+  void 토큰사용자ID조회_실패_유효하지않은토큰() {
     // given
     String invalidToken = "invalidToken";
 
     // when
     final Exception result = assertThrows(Exception.class,
-        () -> target.getUsernameFromToken(invalidToken));
+        () -> target.getUserIdFromToken(invalidToken));
 
     // then
     assertThat(result).isInstanceOf(Exception.class);

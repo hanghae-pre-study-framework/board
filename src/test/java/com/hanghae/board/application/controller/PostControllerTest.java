@@ -25,6 +25,7 @@ import com.hanghae.board.domain.post.service.PostReadService;
 import com.hanghae.board.domain.post.service.PostWriteService;
 import com.hanghae.board.error.BusinessException;
 import com.hanghae.board.error.GlobalExceptionHandler;
+import com.hanghae.board.security.UserDetailsServiceImpl;
 import com.hanghae.board.security.UserPrincipal;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
 import com.hanghae.board.util.WithMockCustomUser;
@@ -64,6 +65,9 @@ class PostControllerTest {
 
   @MockBean
   private JwtTokenProvider jwtTokenProvider;
+
+  @MockBean
+  private UserDetailsServiceImpl userDetailsService;
 
   @Autowired
   private ObjectMapper objectMapper;
