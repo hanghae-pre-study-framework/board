@@ -55,4 +55,7 @@ public class Comment {
   @Column(insertable = false)
   private LocalDateTime updatedAt;
 
+  public void update(String content) {
+    this.content = content;
+  }
 }

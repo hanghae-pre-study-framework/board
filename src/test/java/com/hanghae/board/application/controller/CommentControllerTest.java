@@ -3,12 +3,15 @@ package com.hanghae.board.application.controller;
 
 import static com.hanghae.board.util.FixtureCommon.SUT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.board.application.usecase.AddCommentUseCase;
+import com.hanghae.board.application.usecase.UpdateCommentUseCase;
 import com.hanghae.board.config.SecurityConfig;
 import com.hanghae.board.domain.comment.dto.CommentCommand;
+import com.hanghae.board.domain.comment.dto.UpdateCommentCommand;
 import com.hanghae.board.error.GlobalExceptionHandler;
 import com.hanghae.board.security.UserDetailsServiceImpl;
 import com.hanghae.board.security.jwt.JwtTokenProvider;
@@ -33,6 +36,9 @@ class CommentControllerTest {
 
   @MockBean
   private AddCommentUseCase addCommentUseCase;
+
+  @MockBean
+  private UpdateCommentUseCase updateCommentUseCase;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -59,5 +65,24 @@ class CommentControllerTest {
 
     // then
     result.andExpect(status().isCreated());
+  }
+
+  @Test
+  @WithMockCustomUser(username = "username")
+  void 댓글수정_성공() throws Exception {
+    // given
+    final String url = BASE_URL + "/{commentId}";
+    final Long postId = 1L;
+    final Long commentId = 1L;
+    final UpdateCommentCommand command = SUT.giveMeOne(UpdateCommentCommand.class);
+
+    // when
+    final ResultActions result = mockMvc.perform(put(url, postId, commentId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(command))
+    );
+
+    // then
+    result.andExpect(status().isOk());
   }
 }
