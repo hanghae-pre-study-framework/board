@@ -14,3 +14,7 @@ spring :
         show_sql: true
   thymeleaf:
     enabled: false
+  jwt:
+    secret: thisismyjwtsecretkeynobodycannotaccessexceptme
+
+

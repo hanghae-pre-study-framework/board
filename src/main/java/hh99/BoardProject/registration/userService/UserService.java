@@ -54,9 +54,5 @@ public class UserService {
             log.warn("User not found: {}", username);
             return false;
         }
-//        return userRepository.findByUserName(username)
-//                .map(user->rawPassword.equals(user.getPassword()))
-//               // .map(user -> passwordEncoder.matches(rawPassword, user.getPassword()))  // 비밀번호 검증
-//                .orElse(false);  // 사용자가 없으면 false 반환
     }
 }

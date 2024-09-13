@@ -9,8 +9,8 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-@Component
 @Slf4j
+@Component
 public class TokenMakerService {
     /**
      *  토큰 발급받기
@@ -24,10 +24,10 @@ public class TokenMakerService {
 
     private SecretKey secretKey;
 
-    public void TokenMakerService(@Value("${JWT_SECRET}") String secret){ //Window에서 설정 방법 : setx JWT_SECRET "시크릿 키" / Linux&maxOS :  export JWT_SECRET="시크릿키"
+    public TokenMakerService(@Value("${spring.jwt.secret}") String secret){ //Window에서 설정 방법 : setx JWT_SECRET "시크릿 키" / Linux&maxOS :  export JWT_SECRET="시크릿키"
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
+//void가 있어서 생성자가아닌 매서드로 인식
     public String createToken(String username){
         Date now = new Date();
         Date validity = new Date(now.getTime() + accessTokenExpMilliseconds);

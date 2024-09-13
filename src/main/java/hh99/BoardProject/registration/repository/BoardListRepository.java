@@ -23,3 +23,4 @@ public interface BoardListRepository extends JpaRepository<BoardList, String> {
 
     Optional<BoardList> findBySeqNo(Integer seqNo);
 }
+//easyrandom / pitcher monkey
