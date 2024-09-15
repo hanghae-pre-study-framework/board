@@ -3,11 +3,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -40,13 +43,28 @@ public class TokenMakerService {
                 .compact(); //JWT생성
 
     }
+    public String createToken2(Authentication authentication){
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + accessTokenExpMilliseconds);
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        return "Bearer " + Jwts.builder()
+                .setSubject(authentication.getName()) //주체설정
+                .setIssuedAt(now)//토큰 발행 시간
+                .setExpiration(validity) // 토큰 만료 시간
+                .signWith(secretKey) // 비밀키로 서명
+                .compact(); //JWT생성
+    }
 
     // JWT 토큰에서 사용자 이름(Subject) 가져오기
     public String getUsername(String token) {
         String username = Jwts.parserBuilder()  // 최신 버전에서는 parserBuilder() 사용
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
 
@@ -56,7 +74,7 @@ public class TokenMakerService {
 
     public boolean validateToken(String token){
         try{
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJwt(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             log.info("This token is verified : {}",token);
             return true;
         }catch(Exception e){

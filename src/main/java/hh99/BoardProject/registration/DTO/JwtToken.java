@@ -1,11 +1,10 @@
 package hh99.BoardProject.registration.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Builder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class JwtToken {
     private String grantType; //JWT에 대한 인증타입
