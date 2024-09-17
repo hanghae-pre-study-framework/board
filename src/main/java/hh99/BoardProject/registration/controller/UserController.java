@@ -55,23 +55,15 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             String jwtToken = tokenMakerService.createToken2(auth);
+            response.setHeader("Authorization", jwtToken);
+
             log.info("Login Success for user: {}", loginInfo.getUserName());
-            return ResponseEntity.ok(new JwtResponse(jwtToken));
+            return ResponseEntity.ok("Login Success.");
         }
         catch (Exception e){
             log.warn("Invalid username or password for user: {}", loginInfo.getUserName());
             return ResponseEntity.status(401).body("Invalid username or password");
         }
-        //response.setHeader("Authorization", "Bearer" + jwtToken);
-        //사용자 인증 처리
-        /*if(userService.validateUser(loginInfo.getUserName(), loginInfo.getPassword())){
-            String token = tokenMakerService.createToken(loginInfo.getUserName());
-            log.info("Login Success");
-            return ResponseEntity.ok(new JwtResponse(token));
-        }else{
-            log.warn("Invalid username or password for user: {}", loginInfo.getUserName());
-            return ResponseEntity.status(401).body("Invalid username or password");
-        }*/
 
     }
 
